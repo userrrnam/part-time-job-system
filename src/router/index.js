@@ -1,10 +1,5 @@
-import {
-  createRouter,
-  createWebHistory
-} from 'vue-router'
-import {
-  getToken
-} from '../util/storage'
+import { createRouter, createWebHistory } from 'vue-router'
+import { getToken } from '../util/storage'
 const routes = [{
     path: '/',
     redirect: '/user/login'
@@ -23,6 +18,16 @@ const routes = [{
     path: '/user/register',
     name: 'Register',
     component: () => import('@/views/user/Register.vue')
+  },
+  {
+    path: '/user/person',
+    name: 'Person',
+    component: () => import('@/views/user/person-info/PersonnalInfo.vue')
+  },
+  {
+    path: '/user/apply',
+    name: 'Apply',
+    component: () => import('@/views/user/my-apply/Apply.vue')
   }
 ]
 

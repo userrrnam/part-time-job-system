@@ -18,6 +18,7 @@
           <div class="job_require" @click="checkInfo">
             不限经验，大专学历,不限经验，大专学历不限经验，大专学历
           </div>
+          <JobDetail :visible="showModal" @closeModal="closeModal()"/>
         </div>
       </div>
       <div class="company_info">
@@ -34,17 +35,25 @@
 
 <script>
 import { ref } from "@vue/reactivity";
+import JobDetail from './detail-modal/JobDetail.vue'
 export default {
   name: "JobInfo",
+  components: { JobDetail },
   setup() {
     const flag = ref(false);
+    const showModal = ref(false);
+    
     const handleChange = () => {
       flag.value = !flag.value;
     };
     // 查看职位要求
     const checkInfo = () => {
-      console.log(1);
-    };
+      showModal.value = true;
+    }; 
+      // 关闭对话框
+    const closeModal = (value) => {
+      showModal.value = false;
+    }
     //申请职位
     const replyHandle = () => {
       console.log(1)
@@ -52,6 +61,8 @@ export default {
     return {
       handleChange,
       checkInfo,
+      showModal,
+      closeModal,
       flag,
       replyHandle 
     };

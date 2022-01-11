@@ -23,7 +23,6 @@
           ref="formRef"
           class="login-form"
           @finish="onFinish"
-          @finishFailed="onFinishFailed"
         >
           <a-form-item
             name="studentAccount"
@@ -39,7 +38,6 @@
               </template>
             </a-input>
           </a-form-item>
-
           <a-form-item
             name="password"
             :rules="[{ required: true, message: '请输入密码!' }]"
@@ -90,6 +88,7 @@ export default {
     const formRef = ref();
     const current = ref(["01"]);
     const { proxy: ins } = getCurrentInstance();
+
     const roleType = reactive([
       {
         key: "01",
@@ -119,19 +118,15 @@ export default {
           if (res) {
             const { results } = res;
             setToken(results.token);
-            message.success("登录成功!", 10);
+            message.success("登录成功!", 1);
             router.push("/home");
           }
         },
         (err) => {
           formRef.value.resetFields();
-          message.error({ content: err, duration: 1 });
+          message.error('账号或密码错误', 1);
         }
       );
-    };
-
-    const onFinishFailed = () => {
-      message.error("请输入正确的账号和密码!", 2);
     };
     const toRegister = () => {
       router.push("/user/register");
@@ -145,7 +140,6 @@ export default {
       formState,
       onFinish,
       flag,
-      onFinishFailed,
     };
   },
 };
