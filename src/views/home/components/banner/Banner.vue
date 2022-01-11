@@ -72,6 +72,7 @@ export default {
   width: 100%;
   background-color: white;
   height: 150px;
+  margin-top: 44px;
   .wrapper {
     width: calc(100% - 40%);
     height: 100%;

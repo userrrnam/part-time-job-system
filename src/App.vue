@@ -14,7 +14,6 @@ export default {
 }
 #app {
   width: 100vw;
-  height: 100vh;
   background: rgba(245, 245, 245);
 }
 </style>

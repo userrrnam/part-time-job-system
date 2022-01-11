@@ -1,12 +1,11 @@
 <template>
   <div class="nav_container">
-    <img class="logo" src="@/assets/e08da34488b114bd4c665ba2fa520a31.svg"/>
+    <img class="logo" src="@/assets/e08da34488b114bd4c665ba2fa520a31.svg" />
     <div class="contant">
       <div class="left">
         <span>首页</span>
       </div>
       <div class="right">
-
         <a-dropdown>
           <a class="ant-dropdown-link" @click.prevent>
             Hover me
@@ -43,18 +42,23 @@ export default {
 .nav_container {
   width: 100%;
   height: 44px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
   background-color: white;
   border-bottom: 1px solid rgb(245, 245, 245);
   .logo {
-      position: absolute;
-      top: 1%;
-      left: 5%;
+    position: absolute;
+    top: 1%;
+    left: 5%;
   }
   .contant {
     width: calc(100% - 40%);
     height: 100%;
     margin: 0 auto;
     display: flex;
+    background-color: white;
     justify-content: space-between;
     align-items: center;
   }

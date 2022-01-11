@@ -45,10 +45,15 @@ export default {
     const checkInfo = () => {
       console.log(1);
     };
+    //申请职位
+    const replyHandle = () => {
+      console.log(1)
+    }
     return {
       handleChange,
       checkInfo,
       flag,
+      replyHandle 
     };
   },
 };
@@ -124,6 +129,9 @@ export default {
     .replay {
       background-color: #ff8a00;
       color: white;
+      &:hover {
+        border: 1px solid transparent;
+      }
     }
   }
 }

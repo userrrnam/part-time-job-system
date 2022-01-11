@@ -17,18 +17,16 @@
     </div>
     <div class="last_login_time margin_top">
       <span class="title">上次登录时间： </span>
-      <span class="time">2021-10-30 14:24</span>
+      <div class="time">2021-10-30 14:24</div>
     </div>
     <div class="expact_position margin_top">
       <div class="title">求职期望</div>
       <div class="contant">
-          <div class="work_info">
-              <span>Java</span>
-              <span>面议</span>
-          </div>
-          <div class="city">
-              成都
-          </div>
+        <div class="work_info">
+          <span>Java</span>
+          <span>4000以上</span>
+        </div>
+        <div class="city">成都</div>
       </div>
     </div>
   </div>
@@ -47,7 +45,8 @@ export default {
 
 <style lang='less'>
 .user_card_container {
-  width: 100%;
+  min-width: 200px;
+  max-width: 400px;
   height: 100%;
   padding: 20px;
   border-radius: 8px;
@@ -78,7 +77,8 @@ export default {
       font-size: 14px;
     }
     .time {
-        color: rgb(204, 204, 204);
+      margin-top: 10px;
+      color: rgb(204, 204, 204);
     }
   }
   .expact_position {
@@ -86,15 +86,18 @@ export default {
       font-size: 16px;
     }
     .contant {
-        display: flex;
-        margin-top: 10px;
-        justify-content: space-between;
-        .work_info {
-            span:nth-child(2) {
-                margin-left: 20px;
-                color: #ff8a00;
-            }
+      display: flex;
+      margin-top: 10px;
+      justify-content: space-between;
+      .work_info {
+        span:nth-child(2) {
+          margin-left: 20px;
+          color: #ff8a00;
         }
+      }
+      .city {
+        margin-left: 10px;
+      }
     }
   }
 }
