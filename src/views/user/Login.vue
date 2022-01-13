@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import { reactive, ref, getCurrentInstance } from "vue";
+import { reactive, ref, getCurrentInstance, ErrorCodes } from "vue";
 import { useRouter } from "vue-router";
 import { message } from "ant-design-vue";
 import { setToken } from "@/util/storage.js";
@@ -113,20 +113,18 @@ export default {
       password: "",
     });
     const onFinish = (values) => {
-      ins.$http.post("/LoginStudent/SelectOneStudentUser", values).then(
-        (res) => {
+      ins.$http
+        .post("/LoginStudent/SelectOneStudentUser", values)
+        .then((res) => {
           if (res) {
             const { results } = res;
             setToken(results.token);
             message.success("登录成功!", 1);
             router.push("/home");
           }
-        },
-        (err) => {
-          formRef.value.resetFields();
-          message.error('账号或密码错误', 1);
-        }
-      );
+        }).catch(err => {
+          throw new Error(err);
+        });
     };
     const toRegister = () => {
       router.push("/user/register");
@@ -152,11 +150,6 @@ export default {
   height: 100vh;
   position: relative;
   overflow: hidden;
-  img {
-    top: -15%;
-    left: -15%;
-    position: absolute;
-  }
   .login_contant {
     width: 600px;
     display: flex;

@@ -9,26 +9,22 @@
       </div>
       <div class="select_contant">
         <span class="salarys">期望薪资：</span>
-        <a-space>
-          <a-select
-            ref="select"
-            v-model:value="value1.label"
-            style="width: 120px"
-            :options="salarys"
-            size="small"
-            @focus="focus"
-            @change="handleChange"
-          ></a-select>
-        </a-space>
+        <a-input-number
+          v-model:value="expectSalary"
+          placeholder="输入期望薪资"
+          style="width: 120px"
+          :min="0"
+          @pressEnter="pressEnter"
+        />
         <span class="profession">职位要求：</span>
         <a-space>
           <a-select
             ref="select"
-            v-model:value="value2.label"
+            allowClear
+            placeholder="选择职位"
+            v-model:value="jobType.label"
             style="width: 120px"
-            :options="profession"
-            size="small"
-            @focus="focus"
+            :options="jobType"
             @change="handleChange"
           ></a-select>
         </a-space>
@@ -38,29 +34,69 @@
 </template>
 
 <script>
-import { reactive } from "vue";
+import { getCurrentInstance, reactive, ref } from "vue";
+import { useStore } from "vuex";
+import { message } from "ant-design-vue";
 import { useConsteEffect } from "./hooks";
 export default {
   name: "Banner",
   setup() {
-    const { cityList, salarys, profession } = useConsteEffect();
+    const { cityList, salarys, jobType } = useConsteEffect();
+    const expectSalary = ref("");
+    const { proxy: ins } = getCurrentInstance();
+    const store = useStore();
+    const pageConfig = reactive({
+      totalCount: "",
+      totalPages: "",
+    });
+    const chooseParams = reactive({
+      expectSalary: "",
+      city: "",
+      jobType: "",
+    });
+    //条件查询职位
+    const getJobList = (params) => {
+      ins.$http
+        .post("/StudentHomePage/selectCompanyByCondition ", {
+          ...params,
+          page: 1,
+          size: 10,
+        })
+        .then((res) => {
+          pageConfig.totalCount = res.totalCount;
+          pageConfig.totalPages = res.totalPages;
+          store.commit("saveJobList", res.results);
+          store.commit("savePageConfig", pageConfig);
+        });
+    };
     const chooseCity = (value) => {
-      console.log(value.key, value.name);
+      if (value.name === "全国") {
+        chooseParams.city = ''
+        getJobList(chooseParams);
+      } else {
+        chooseParams.city = value.name;
+        getJobList(chooseParams);
+      }
     };
-    const handleChange = (value) => {
-      console.log(value);
+    const handleChange = (_, option) => {
+      chooseParams.jobType = option?.label;
+      getJobList(chooseParams);
     };
-    const focus = () => {
-      console.log(1);
+    const pressEnter = () => {
+      if (typeof expectSalary.value === "number" || !expectSalary.value) {
+        chooseParams.expectSalary = expectSalary.value;
+        getJobList(chooseParams);
+      } else {
+        message.error("请输入数字", 1);
+      }
     };
     return {
       cityList,
+      expectSalary,
       chooseCity,
-      profession,
-      value1: reactive({ value: "00", label: "不限" }),
-      value2: reactive({ value: "00", label: "不限" }),
+      jobType,
       salarys,
-      focus,
+      pressEnter,
       handleChange,
     };
   },
@@ -91,10 +127,10 @@ export default {
       }
     }
     .select_contant {
-        margin: 20px 0;
-        .profession {
-            margin-left: 20px;
-        }
+      margin: 20px 0;
+      .profession {
+        margin-left: 20px;
+      }
     }
   }
 }

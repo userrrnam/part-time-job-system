@@ -76,19 +76,19 @@ export const useConsteEffect = () => {
           label: '4000以上',
         },
       ]);
-      const profession = reactive([
+      const jobType = reactive([
           {
               value: '01',
-              label: '互联网'
+              label: '技术'
           },
           {
               value: '02',
-              label: '娱乐'
+              label: '设计'
           }
       ])
     return {
         cityList,
         salarys,
-        profession
+        jobType
     }
 }

@@ -13,7 +13,6 @@ const instance = axios.create({
   timeout: 30000,
   baseURL: 'http://192.168.110.241:8080/', //接口请求地址
 })
-
 // 添加请求拦截器
 instance.interceptors.request.use(config => {
   return config
@@ -25,7 +24,7 @@ instance.interceptors.request.use(config => {
 // 添加响应拦截器
 instance.interceptors.response.use(res => {
   // 对响应数据做点什么
-  const result = res.data;
+  const result = res?.data;
   //判断状态code是否为指定数值(200).
   if (res.status === 401 || res.status === 403) {
     // 登录过期 跳转登录
@@ -42,7 +41,11 @@ instance.interceptors.response.use(res => {
   }
 }, error => {
   // 对响应错误做点什么
-  return Promise.reject(error);
+  const { errorCode, errorMsg } = error.response.data;
+  if (errorCode === 4) {
+    router.replace('/user/login');
+  }
+  message.error({content: errorMsg, duration: 1});
 });
 
 export function post(url, data) {

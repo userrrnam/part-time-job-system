@@ -1,9 +1,8 @@
 <template>
   <div class="modal_wrapper">
     <div>
-      <a-modal v-model:visible="visible" title="Basic Modal" @cancel="handleCance" closable :footer="null">
-        <p>Some contents...</p>
-        <p>Some contents...</p>
+      <a-modal v-model:visible="visible" title="职位要求" @cancel="handleCance" closable :footer="null">
+        <p>{{content}}</p>
       </a-modal>
     </div>
   </div>
@@ -22,6 +21,5 @@ export default {
   },
 };
 </script>
-
 <style lang="less" scoped>
 </style>

@@ -1,31 +1,48 @@
 <template>
   <div class="job_container">
     <!-- 骨架屏 -->
-    <div class="privew" v-if="flag">
+    <div class="privew" v-if="!workInfo">
       <a-skeleton active />
     </div>
-    <div class="contant" v-if="!flag">
+    <div class="contant" v-if="workInfo">
       <div class="job_info">
         <div class="job_title">
-          <span>Java</span>
-          <span> 成都 </span>
+          <span>{{ workInfo.jobName }}</span>
+          <span> {{ workInfo.city }} </span>
         </div>
         <div class="job_detail">
           <div>
             工资：
-            <span class="salay">3000 ~ 4000</span>
+            <span class="salay"
+              >{{ workInfo.minSalary }} ~ {{ workInfo.maxSalary }}</span
+            >
           </div>
           <div class="job_require" @click="checkInfo">
-            不限经验，大专学历,不限经验，大专学历不限经验，大专学历
+            {{ workInfo.details }}
           </div>
-          <JobDetail :visible="showModal" @closeModal="closeModal()"/>
+          <JobDetail
+            :visible="showModal"
+            @closeModal="closeModal()"
+            :content="workInfo.details"
+          />
         </div>
       </div>
       <div class="company_info">
-        <div class="company_logo">深圳华恩</div>
+        <a-avatar
+          shape="square"
+          :size="60"
+          :style="{
+            backgroundColor: colorList[index % 4],
+            color: fontColor[index % 4],
+          }"
+        >
+          {{ workInfo.companyName.slice(0, 4) }}
+        </a-avatar>
         <div class="company_detail">
-          <div class="company_name">深圳市华恩装饰工程有限公司</div>
-          <span class="number">招聘人数：20人</span>
+          <div class="company_name">{{ workInfo.companyName }}</div>
+          <span class="number"
+            >招聘人数：{{ workInfo.recruitingNumber }}人</span
+          >
         </div>
       </div>
       <a-button class="replay" @click="replyHandle">申请职位</a-button>
@@ -34,37 +51,49 @@
 </template>
 
 <script>
-import { ref } from "@vue/reactivity";
-import JobDetail from './detail-modal/JobDetail.vue'
+import { reactive, ref, toRefs, getCurrentInstance } from "vue";
+import { message } from 'ant-design-vue'
+import JobDetail from "./detail-modal/JobDetail.vue";
 export default {
   name: "JobInfo",
+  props: ["workInfo", "index"],
   components: { JobDetail },
-  setup() {
-    const flag = ref(false);
+  setup(props, { emit }) {
     const showModal = ref(false);
-    
-    const handleChange = () => {
-      flag.value = !flag.value;
-    };
+    const colorList = ["#daefff", "#daffea", "#ffe3e3", "#ffeada"];
+    const fontColor = ["#61bff9", "#7acba1",  "#f8ad82","#f97d61"];
+    const { proxy: ins } = getCurrentInstance();
+    const job = toRefs(props.workInfo);
+    const replayParams = reactive({
+      companyId: '',
+      jobId: '',
+    })
     // 查看职位要求
     const checkInfo = () => {
       showModal.value = true;
-    }; 
-      // 关闭对话框
+    };
+    // 关闭对话框
     const closeModal = (value) => {
       showModal.value = false;
-    }
+    };
     //申请职位
     const replyHandle = () => {
-      console.log(1)
-    }
+      replayParams.companyId = job.companyId.value;
+      replayParams.jobId = job.jobId.value;
+      ins.$http.post('/StudentHomePage/applyJob',replayParams).then((res) => {
+        if (!res.results) {
+          message.success("申请成功！");
+          emit("refreshPage", {page: 1, size: 8});
+        }
+      })
+    };
     return {
-      handleChange,
       checkInfo,
+      colorList,
+      fontColor,
       showModal,
       closeModal,
-      flag,
-      replyHandle 
+      replyHandle,
     };
   },
 };
@@ -80,6 +109,7 @@ export default {
     background: white;
     border-radius: 8px;
     .job_info {
+      width: 350px;
       .job_title {
         span:nth-child(1) {
           font-size: 16px;
@@ -94,6 +124,8 @@ export default {
         font-size: 12px;
         margin-top: 10px;
         .salay {
+          display: inline-block;
+          width: 100px;
           color: #ff8a00;
         }
         .job_require {
@@ -123,9 +155,10 @@ export default {
       }
       .company_detail {
         position: relative;
+        min-width: 100px;
         margin-left: 20px;
         .company_name {
-          font-size: 16px;
+          font-size: 15px;
           font-weight: 600;
         }
         .number {
@@ -138,6 +171,7 @@ export default {
       }
     }
     .replay {
+      border-radius: 5px;
       background-color: #ff8a00;
       color: white;
       &:hover {

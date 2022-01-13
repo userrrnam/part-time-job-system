@@ -14,6 +14,7 @@ export default {
 }
 #app {
   width: 100vw;
+  overflow-x: hidden;
   background: rgba(245, 245, 245);
 }
 </style>

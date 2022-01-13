@@ -1,16 +1,16 @@
 <template>
   <div class="nav_container">
-    <img class="logo" src="@/assets/e08da34488b114bd4c665ba2fa520a31.svg" />
     <div class="contant">
       <div class="left">
-        <span>首页</span>
+        <img class="logo" src="@/assets/logo.png" />
       </div>
       <div class="right">
-        <a-avatar style="color: #f56a00; background-color: #fde3cf">U</a-avatar>
         <a-dropdown>
           <a class="ant-dropdown-link" @click.prevent>
-            Hover me
-            <DownOutlined />
+            <UserOutlined style="fontsize: 22px; color: white; marginRight: 5px" />
+            <CaretDownOutlined
+              style="fontsize: 12px; color: white;"
+            />
           </a>
           <template #overlay>
             <a-menu>
@@ -30,14 +30,19 @@ import { DownOutlined } from "@ant-design/icons-vue";
 import { removeToken } from "@/util/storage.js";
 import { message } from "ant-design-vue";
 import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 import { reactive } from "@vue/reactivity";
+import { UserOutlined, CaretDownOutlined } from "@ant-design/icons-vue";
 export default {
   name: "Navigation",
   components: {
     DownOutlined,
+    CaretDownOutlined,
+    UserOutlined,
   },
   setup() {
     const router = useRouter();
+    const store = useStore();
     const menu = reactive([
       {
         key: "01",
@@ -71,6 +76,7 @@ export default {
     };
     return {
       menu,
+      store,
       changeHandler,
     };
   },
@@ -85,25 +91,28 @@ export default {
   top: 0;
   left: 0;
   z-index: 1;
-  background-color: white;
-  border-bottom: 1px solid rgb(245, 245, 245);
-  .logo {
-    position: absolute;
-    top: 1%;
-    left: 5%;
-  }
+  box-shadow: 0 0 10px rgb(0 0 0 / 15%);
+  color: white;
+  background-color: rgb(36, 41, 47);
+  overflow: hidden;
   .contant {
     width: calc(100% - 40%);
     height: 100%;
     margin: 0 auto;
     display: flex;
-    background-color: white;
     justify-content: space-between;
     align-items: center;
   }
   .left {
     position: relative;
     font-size: 16px;
+    .logo {
+      cursor: pointer;
+      position: relative;
+      width: 200px;
+      color: white;
+      left: -20%;
+    }
     span {
       margin-left: 20px;
     }
