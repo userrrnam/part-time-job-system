@@ -1,94 +1,59 @@
 import { reactive } from 'vue'
 export const useConsteEffect = () => {
-    const cityList = reactive([
-        {
-            key: "00",
-            name: "全国",
+    const jobType = reactive([{
+            key: '00',
+            value: '全部'
+        }, {
+            key: '01',
+            value: '计算机/网络/技术类'
         },
         {
-            key: "01",
-            name: "上海",
+            key: '02',
+            value: '销售类'
         },
         {
-            key: "02",
-            name: "深圳",
+            key: '03',
+            value: '电子/电器/通信技术类'
         },
         {
-            key: "03",
-            name: "成都",
+            key: '03',
+            value: '电气/能源/动力类'
         },
         {
-            key: "04",
-            name: "北京",
+            key: '04',
+            value: '金融类(银行/基金/证券/期货/投资)'
         },
         {
-            key: "05",
-            name: "上海",
+            key: '05',
+            value: '建筑/房地产/装饰装修/物业管理类'
         },
         {
-            key: "06",
-            name: "深圳",
+            key: '06',
+            value: '技工类',
         },
         {
-            key: "07",
-            name: "成都",
+            key: '07',
+            value: '海洋类'
         },
         {
-            key: "08",
-            name: "北京",
+            key: '08',
+            value: '财务/审计/统计类'
         },
         {
-            key: "03",
-            name: "成都",
+            key: '09',
+            value: '教育/培训类'
         },
         {
-            key: "04",
-            name: "北京",
+            key: '10',
+            value: '商业零售类'
         },
         {
-            key: "05",
-            name: "上海",
-        },
-        {
-            key: "06",
-            name: "深圳",
-        },
-        {
-            key: "07",
-            name: "成都",
-        },
-        {
-            key: "08",
-            name: "北京",
-        },
-    ]);
-    const salarys = reactive([
-        {
-          value: 'jack',
-          label: '2000以内',
-        },
-        {
-          value: 'lucy',
-          label: '2000~4000',
-        },
-        {
-          value: 'yiminghe',
-          label: '4000以上',
-        },
-      ]);
-      const jobType = reactive([
-          {
-              value: '01',
-              label: '技术'
-          },
-          {
-              value: '02',
-              label: '设计'
-          }
-      ])
+            key: '11',
+            value: '销售类'
+        }
+
+    ])
     return {
-        cityList,
-        salarys,
         jobType
     }
 }

@@ -1,12 +1,14 @@
 <template>
   <div class="person_contaniner">
-      个人信息
+        <Navigation />
   </div>
 </template>
 
 <script>
+import Navigation from '@/components/nav/Navigation.vue'
 export default {
-    name: 'PersonalInfo'
+    name: 'PersonalInfo',
+    components: { Navigation }
 }
 </script>
 

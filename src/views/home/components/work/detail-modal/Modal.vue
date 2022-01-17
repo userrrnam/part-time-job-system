@@ -1,7 +1,8 @@
 <template>
   <div class="modal_wrapper">
     <div>
-      <a-modal v-model:visible="visible" title="职位要求" @cancel="handleCance" closable :footer="null">
+      <a-modal v-model:visible="visible" :title="title" @cancel="handleCance" closable :footer="null">
+        <slot name="content"></slot>
         <p>{{content}}</p>
       </a-modal>
     </div>
@@ -10,7 +11,7 @@
 
 <script>
 export default {
-  props: ["visible", 'content'],
+  props: ["visible", 'content', 'title'],
   setup(_, { emit }) {
     const handleCance = () => {
       emit("closeModal");

@@ -8,22 +8,23 @@
       <div class="job_info">
         <div class="job_title">
           <span>{{ workInfo.jobName }}</span>
-          <span> {{ workInfo.city }} </span>
+          <span> {{ workInfo.cityName }} </span>
         </div>
         <div class="job_detail">
           <div>
-            工资：
-            <span class="salay"
-              >{{ workInfo.minSalary }} ~ {{ workInfo.maxSalary }}</span
-            >
+            <span class="salay">{{ workInfo.salary }} 元 / 日</span>
+            <span class="line"></span>
+            <span class="salay calculate">{{ workInfo.calculate }}</span>
+            <span class="line"></span>
           </div>
-          <div class="job_require" @click="checkInfo">
+          <span class="job_require" @click="checkInfo">
             {{ workInfo.details }}
-          </div>
-          <JobDetail
+          </span>
+          <Modal
             :visible="showModal"
             @closeModal="closeModal()"
             :content="workInfo.details"
+            title="职位要求"
           />
         </div>
       </div>
@@ -39,54 +40,114 @@
           {{ workInfo.companyName.slice(0, 4) }}
         </a-avatar>
         <div class="company_detail">
-          <div class="company_name">{{ workInfo.companyName }}</div>
+          <div class="company_name" @click="checkCompany(workInfo.companyId)">
+            {{ workInfo.companyName }}
+          </div>
+          <Modal
+            :visible="displyModal"
+            @closeModal="closeCompanyModal()"
+            title="公司详情"
+          >
+            <template #content>
+              <a-typography>
+                <a-typography-title :level="5">公司名称</a-typography-title>
+                <a-typography-paragraph>
+                  {{ companyDetailInfo.companyName }}
+                </a-typography-paragraph>
+                <a-typography-title :level="5">公司简介</a-typography-title>
+                <a-typography-paragraph>
+                  {{ companyDetailInfo.details }}
+                </a-typography-paragraph>
+                <a-typography-title :level="5">公司邮箱</a-typography-title>
+                <a-typography-paragraph>
+                  {{ companyDetailInfo.email }}
+                </a-typography-paragraph>
+                <a-typography-title :level="5">公司地址</a-typography-title>
+                <a-typography-paragraph>
+                  {{ companyDetailInfo.address }}
+                </a-typography-paragraph>
+              </a-typography>
+            </template>
+          </Modal>
           <span class="number"
-            >招聘人数：{{ workInfo.recruitingNumber }}人</span
+            >招聘人数：{{ workInfo.recruitingNumber }} 人</span
           >
         </div>
       </div>
-      <a-button class="replay" @click="replyHandle">申请职位</a-button>
+      <a-button
+        class="replay"
+        @click="replyHandle(workInfo.jobId, workInfo.companyId)"
+        >申请职位</a-button
+      >
     </div>
   </div>
 </template>
 
 <script>
-import { reactive, ref, toRefs, getCurrentInstance } from "vue";
-import { message } from 'ant-design-vue'
-import JobDetail from "./detail-modal/JobDetail.vue";
+import { reactive, ref, getCurrentInstance } from "vue";
+import { message } from "ant-design-vue";
+import Modal from "./detail-modal/Modal.vue";
 export default {
   name: "JobInfo",
   props: ["workInfo", "index"],
-  components: { JobDetail },
-  setup(props, { emit }) {
+  components: { Modal },
+  setup(_, { emit }) {
     const showModal = ref(false);
     const colorList = ["#daefff", "#daffea", "#ffe3e3", "#ffeada"];
-    const fontColor = ["#61bff9", "#7acba1",  "#f8ad82","#f97d61"];
+    const fontColor = ["#61bff9", "#7acba1", "#f8ad82", "#f97d61"];
     const { proxy: ins } = getCurrentInstance();
-    const job = toRefs(props.workInfo);
     const replayParams = reactive({
-      companyId: '',
-      jobId: '',
-    })
+      companyId: "",
+      jobId: "",
+    });
     // 查看职位要求
     const checkInfo = () => {
       showModal.value = true;
     };
     // 关闭对话框
-    const closeModal = (value) => {
+    const closeModal = () => {
       showModal.value = false;
     };
     //申请职位
-    const replyHandle = () => {
-      replayParams.companyId = job.companyId.value;
-      replayParams.jobId = job.jobId.value;
-      ins.$http.post('/StudentHomePage/applyJob',replayParams).then((res) => {
+    const replyHandle = (e, v) => {
+      replayParams.companyId = v;
+      replayParams.jobId = e;
+      ins.$http.post("/StudentHomePage/applyJob", replayParams).then((res) => {
         if (!res.results) {
           message.success("申请成功！");
-          emit("refreshPage", {page: 1, size: 8});
+          emit("refreshPage", { page: 1, size: 8 });
         }
-      })
+      });
     };
+    //查看公司详情
+    let displyModal = ref(false);
+    const companyDetailInfo = reactive({
+      companyName: "",
+      address: "",
+      email: "",
+      details: "",
+    });
+    const checkCompany = (value) => {
+      ins.$http
+        .post("/StudentHomePage/selectCompanyInformationById", {
+          companyId: value,
+        })
+        .then((res) => {
+          if (res.results) {
+            const { address, companyName, email, details } = res.results;
+            companyDetailInfo.companyName = companyName;
+            companyDetailInfo.address = address;
+            companyDetailInfo.email = email;
+            companyDetailInfo.details = details;
+          }
+        });
+      displyModal.value = true;
+    };
+    //关闭modal
+    const closeCompanyModal = () => {
+      displyModal.value = false;
+    };
+
     return {
       checkInfo,
       colorList,
@@ -94,6 +155,10 @@ export default {
       showModal,
       closeModal,
       replyHandle,
+      checkCompany,
+      displyModal,
+      closeCompanyModal,
+      companyDetailInfo,
     };
   },
 };
@@ -124,13 +189,22 @@ export default {
         font-size: 12px;
         margin-top: 10px;
         .salay {
+          font-weight: 600;
+          font-size: 12px;
+          margin: 0 5px;
           display: inline-block;
-          width: 100px;
           color: #ff8a00;
+        }
+        .line {
+          display: inline-block;
+          width: 0;
+          height: 10px;
+          margin: 0 5px;
+          border: 1px solid rgb(204, 204, 204);
         }
         .job_require {
           max-width: 200px;
-          margin-left: 10px;
+          margin-left: 5px;
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
@@ -155,11 +229,19 @@ export default {
       }
       .company_detail {
         position: relative;
-        min-width: 100px;
         margin-left: 20px;
+
         .company_name {
+          width: 180px;
+          cursor: pointer;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
           font-size: 15px;
           font-weight: 600;
+          &:hover {
+            color: #ff8a00;
+          }
         }
         .number {
           position: absolute;

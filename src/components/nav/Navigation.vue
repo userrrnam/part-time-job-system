@@ -2,20 +2,32 @@
   <div class="nav_container">
     <div class="contant">
       <div class="left">
-        <img class="logo" src="@/assets/logo.png" />
+        <img class="logo" src="@/assets/logo.png" @click="goHome()" />
+      </div>
+      <slot name="mid"></slot>
+      <div class="search_job">
+        <a-input-search
+          v-model:value="searchValue"
+          placeholder="搜索职位"
+          @search="onSearch"
+        />
       </div>
       <div class="right">
         <a-dropdown>
           <a class="ant-dropdown-link" @click.prevent>
-            <UserOutlined style="fontsize: 22px; color: white; marginRight: 5px" />
-            <CaretDownOutlined
-              style="fontsize: 12px; color: white;"
+            <UserOutlined
+              style="fontsize: 22px; color: white; marginright: 5px"
             />
+            <CaretDownOutlined style="fontsize: 12px; color: white" />
           </a>
           <template #overlay>
             <a-menu>
-              <a-menu-item v-for="item in menu" :key="item.key">
-                <a @click="changeHandler(item.key)">{{ item.name }}</a>
+              <a-menu-item
+                v-for="item in menu"
+                :key="item.key"
+                @click="changeHandler(item.key)"
+              >
+                {{ item.name }}
               </a-menu-item>
             </a-menu>
           </template>
@@ -26,23 +38,28 @@
 </template>
 
 <script>
-import { DownOutlined } from "@ant-design/icons-vue";
 import { removeToken } from "@/util/storage.js";
-import { message } from "ant-design-vue";
+import { message, Modal } from "ant-design-vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { reactive } from "@vue/reactivity";
-import { UserOutlined, CaretDownOutlined } from "@ant-design/icons-vue";
+import { reactive, ref, getCurrentInstance, createVNode } from "vue";
+import {
+  UserOutlined,
+  CaretDownOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons-vue";
 export default {
   name: "Navigation",
   components: {
-    DownOutlined,
     CaretDownOutlined,
     UserOutlined,
+    ExclamationCircleOutlined,
   },
   setup() {
+    const searchValue = ref();
     const router = useRouter();
     const store = useStore();
+    const { proxy: ins } = getCurrentInstance();
     const menu = reactive([
       {
         key: "01",
@@ -66,17 +83,46 @@ export default {
           router.push("/user/apply");
           break;
         case "03":
-          removeToken();
-          setTimeout(() => {
-            router.replace("/user/login");
-            message.success("退出成功", 1);
-          }, 500);
+          Modal.confirm({
+            title: "提示",
+            icon: createVNode(ExclamationCircleOutlined),
+            content: "是否退出登录？",
+            okText: "确认",
+            cancelText: "取消",
+            onOk: () => {
+              removeToken();
+              setTimeout(() => {
+                router.replace("/user/login");
+                message.success("退出成功", 1);
+              }, 500);
+            }
+          });
           break;
       }
     };
+    const goHome = () => {
+      router.push("/home");
+    };
+    const onSearch = () => {
+      if (router.currentRoute.value.fullPath !== "/home") {
+        router.push("/home");
+      }
+      ins.$http
+        .post("/StudentHomePage/selectCompanyByCondition", {
+          jobName: searchValue.value,
+          page: 1,
+          size: 8,
+        })
+        .then((res) => {
+          store.commit("saveJobList", res.results);
+        });
+    };
     return {
       menu,
+      onSearch,
       store,
+      goHome,
+      searchValue,
       changeHandler,
     };
   },
@@ -117,14 +163,23 @@ export default {
       margin-left: 20px;
     }
   }
+  .search_job {
+    .ant-input-search {
+      width: 400px;
+      border-radius: 15px;
+      &:hover {
+        border: 1px solid #000;
+      }
+    }
+  }
   .right {
     display: flex;
     align-items: center;
     justify-content: center;
   }
-  .ant-dropdown-link {
-    color: #000;
-    margin-left: 10px;
+  .anticon-user {
+    font-size: 18px;
+    margin-right: 5px;
   }
 }
 </style>

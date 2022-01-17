@@ -57,6 +57,7 @@
               type="primary"
               html-type="submit"
               class="login-form-button"
+              :loading="loading"
             >
               登录
             </a-button>
@@ -71,8 +72,9 @@
 </template>
 
 <script>
-import { reactive, ref, getCurrentInstance, ErrorCodes } from "vue";
+import { reactive, ref, getCurrentInstance } from "vue";
 import { useRouter } from "vue-router";
+import { useStore  } from 'vuex'
 import { message } from "ant-design-vue";
 import { setToken } from "@/util/storage.js";
 import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
@@ -86,6 +88,8 @@ export default {
     const router = useRouter();
     const flag = ref(false);
     const formRef = ref();
+    const store = useStore();
+    const loading = ref(false);
     const current = ref(["01"]);
     const { proxy: ins } = getCurrentInstance();
 
@@ -113,17 +117,19 @@ export default {
       password: "",
     });
     const onFinish = (values) => {
+      loading.value = true;
+      store.state.showNav = true;
       ins.$http
         .post("/LoginStudent/SelectOneStudentUser", values)
         .then((res) => {
-          if (res) {
-            const { results } = res;
-            setToken(results.token);
-            message.success("登录成功!", 1);
-            router.push("/home");
-          }
-        }).catch(err => {
-          throw new Error(err);
+            if (res.results.token) {
+              setToken(res.results.token);
+              message.success("登录成功!", 1);
+              router.push("/home");
+            }
+            loading.value = false;
+        }, (_) => {
+          loading.value = false;
         });
     };
     const toRegister = () => {
@@ -131,6 +137,7 @@ export default {
     };
     return {
       current,
+      loading,
       roleType,
       formRef,
       toRegister,

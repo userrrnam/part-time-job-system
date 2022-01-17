@@ -4,7 +4,11 @@
     <Banner />
     <div class="contant_info">
       <div class="work_list" v-if="store.state.jobList">
-        <div class="work_item" v-for="(item, index) in store.state.jobList" :key="index">
+        <div
+          class="work_item"
+          v-for="(item, index) in store.state.jobList"
+          :key="index"
+        >
           <JobInfo :workInfo="item" :index="index" @refreshPage="getWorkInfo" />
         </div>
         <div class="pageation">
@@ -30,8 +34,8 @@
 </template>
 
 <script>
-import { getCurrentInstance, onBeforeMount, reactive, ref } from "vue";
-import { useStore } from 'vuex'
+import { getCurrentInstance, reactive, ref, onMounted } from "vue";
+import { useStore } from "vuex";
 import Navigation from "@/components/nav/Navigation.vue";
 import Banner from "./components/banner/Banner.vue";
 import UserCard from "./components/user-info/UserCard.vue";
@@ -60,12 +64,21 @@ export default {
         if (res.results) {
           workInfo.length = 0;
           workInfo.push(...res.results);
+          workInfo?.forEach((vals) => {
+            store.state?.cityName?.filter((item) => {
+              if (item.value == vals.city) {
+                vals.cityName = item.label;
+              }
+            });
+          });
           store.commit("saveJobList", workInfo);
           store.commit("savePageConfig", pageResult);
+        } else {
+          store.commit("saveJobList", null);
         }
       });
     };
-    onBeforeMount(() => {
+    onMounted(() => {
       getWorkInfo(pageConfig);
     });
 
@@ -89,8 +102,9 @@ export default {
 
 <style lang="less" scoped>
 .home_container {
-  width: 100%;
-  overflow: auto;
+  width: 100vw;
+  overflow-y: auto;
+  overflow-x: hidden;
   min-height: calc(100vh - 80px);
   .contant_info {
     display: flex;
