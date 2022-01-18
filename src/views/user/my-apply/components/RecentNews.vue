@@ -1,13 +1,16 @@
 <template>
-  <p>最新动态</p>
+  <div>
+    <TagOutlined />
+    <span style="marginleft: 10px">最新动态</span>
+  </div>
   <div class="news_list">
     <div class="new_item" v-for="(item, index) in jobList" :key="index">
       <InfoCircleOutlined v-if="item.status === 0" style="color: #1890ff" />
       <CheckCircleOutlined v-if="item.status === 1" style="color: #52c41a" />
       <CloseCircleOutlined v-if="item.status === 2" style="color: #ff7875" />
       <span>{{ item.replyTime }}</span>
-      <span>{{ item.companyName }}</span>
       <span>{{ item.jobName }}</span>
+      <span class="company">{{ item.companyName }}</span>
     </div>
   </div>
 </template>
@@ -18,10 +21,16 @@ import {
   CloseCircleOutlined,
   InfoCircleOutlined,
   CheckCircleOutlined,
+  TagOutlined,
 } from "@ant-design/icons-vue";
 export default {
   name: "RecentNews",
-  components: { CloseCircleOutlined, InfoCircleOutlined, CheckCircleOutlined },
+  components: {
+    CloseCircleOutlined,
+    InfoCircleOutlined,
+    CheckCircleOutlined,
+    TagOutlined,
+  },
   setup() {
     const { proxy: ins } = getCurrentInstance();
     const jobList = reactive([]);
@@ -56,9 +65,11 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    cursor: pointer;
-    &:hover {
-      color: #ff8a00;
+    .company {
+      cursor: pointer;
+      &:hover {
+        color: #ff8a00;
+      }
     }
     span {
       margin-right: 8px;

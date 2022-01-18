@@ -66,9 +66,9 @@ export default {
     ]);
     const router = useRouter();
     onBeforeMount(() => {
-      // ins.$http.post("/StudentHomePage/selectInformationHome").then((res) => {
-      //   console.log(res);
-      // });
+      ins.$http.post("/StudentApplyJobPage/selectStatus").then((res) => {
+        console.log(res);
+      });
     });
     const goHome = () => {
       router.push("/home");
