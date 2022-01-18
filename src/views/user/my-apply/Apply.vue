@@ -27,12 +27,8 @@
         </a-tabs>
       </div>
       <div class="apply_news">
-        <p>最新动态</p>
-        <div class="news_list">
-          <div class="new_item" v-for="(item, index) in 12" :key="index">
-            2010-10-31 10: 32: 11 云起老和科技有限公司 未通过 未通过
-          </div>
-        </div>
+        <RecentNews />
+      
       </div>
     </div>
     <Footer />
@@ -44,9 +40,10 @@ import { getCurrentInstance, onBeforeMount, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import Navigation from "@/components/nav/Navigation.vue";
 import Footer from "@/components/footer/Footer.vue";
+import RecentNews from './components/RecentNews.vue';
 export default {
   name: "MyApply",
-  components: { Navigation, Footer },
+  components: { Navigation, Footer, RecentNews },
   setup() {
     const { proxy: ins } = getCurrentInstance();
     const tabParams = reactive([
@@ -69,9 +66,9 @@ export default {
     ]);
     const router = useRouter();
     onBeforeMount(() => {
-      ins.$http.post("/StudentHomePage/selectInformationHome").then((res) => {
-        console.log(res);
-      });
+      // ins.$http.post("/StudentHomePage/selectInformationHome").then((res) => {
+      //   console.log(res);
+      // });
     });
     const goHome = () => {
       router.push("/home");

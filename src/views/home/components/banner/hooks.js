@@ -53,7 +53,26 @@ export const useConsteEffect = () => {
         }
 
     ])
+    const clearingForm = reactive([
+        {
+          key: "00",
+          value: "不限",
+        },
+        {
+          key: "01",
+          value: "日结",
+        },
+        {
+          key: "02",
+          value: "周结",
+        },
+        {
+          key: "03",
+          value: "月结",
+        },
+      ]);
     return {
-        jobType
+        jobType,
+        clearingForm
     }
 }

@@ -1,7 +1,10 @@
-import { createStore } from 'vuex'
+import {
+  createStore
+} from 'vuex'
 
 export default createStore({
   state: {
+    loading: false,
     showNav: false,
     //工作列表
     jobList: {},
@@ -14,11 +17,22 @@ export default createStore({
     //城市名
     cityName: '',
     //用户所在地
-    location:'',
+    location: '',
     //查询条件
     selectJobParams: {},
+    //省、市、区/县
+    locations: [],
   },
   mutations: {
+    changLoading(state, value) {
+      if (!value) {
+        setTimeout(() => {
+          state.loading = value;
+        }, 300);
+      } else {
+        state.loading = value;
+      }
+    },
     changeShow(state, value) {
       state.showNav = value;
     },
@@ -42,6 +56,9 @@ export default createStore({
     },
     savaSelectJobParams(state, value) {
       state.selectJobParams = value;
+    },
+    saveLocations(state, value) {
+      state.locations = value;
     }
   },
   actions: {},

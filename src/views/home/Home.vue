@@ -3,28 +3,30 @@
     <Navigation />
     <Banner />
     <div class="contant_info">
-      <div class="work_list" v-if="store.state.jobList">
-        <div
-          class="work_item"
-          v-for="(item, index) in store.state.jobList"
-          :key="index"
-        >
-          <JobInfo :workInfo="item" :index="index" />
+      <a-spin :spinning="store.state.loading">
+        <div class="work_list" v-if="store.state.jobList">
+          <div
+            class="work_item"
+            v-for="(item, index) in store.state.jobList"
+            :key="index"
+          >
+            <JobInfo :workInfo="item" :index="index" />
+          </div>
+          <div class="pageation">
+            <a-pagination
+              size="small"
+              :total="store.state.pageConfig.totalCount"
+              v-model:pageSize="pageConfig.size"
+              v-model:current="currentPage"
+              @change="changePage"
+              :show-total="(total) => `共 ${total} 条`"
+            />
+          </div>
         </div>
-        <div class="pageation">
-          <a-pagination
-            size="small"
-            :total="store.state.pageConfig.totalCount"
-            v-model:pageSize="pageConfig.size"
-            v-model:current="currentPage"
-            @change="changePage"
-            :show-total="(total) => `共 ${total} 条`"
-          />
+        <div class="not_data" v-if="!store.state.jobList">
+          <a-empty description="暂无数据" />
         </div>
-      </div>
-      <div class="not_data" v-else>
-        <a-empty description="暂无数据" />
-      </div>
+      </a-spin>
       <div class="info_card">
         <UserCard />
       </div>
@@ -65,11 +67,13 @@ export default {
           workInfo.length = 0;
           workInfo.push(...res.results);
           workInfo?.forEach((vals) => {
-            store.state.cityName?.forEach((item) => {
-              if (item.value == vals.city) {
-                vals.cityName = item.label;
-              }
-            });
+            if (store.state.cityName) {
+              store.state.cityName.forEach((item) => {
+                if (item.value == vals.city) {
+                  vals.cityName = item.label;
+                }
+              });
+            }
           });
           store.commit("saveJobList", workInfo);
           store.commit("savePageConfig", pageResult);
@@ -113,6 +117,14 @@ export default {
     margin: 10px auto 0;
     justify-content: space-between;
     align-items: flex-start;
+    .ant-spin-nested-loading {
+      width: 100%;
+      margin-right: 10px;
+      :deep(.ant-spin) {
+        top: 50%;
+        transform: translateY(-50%);
+      }
+    }
     .work_list {
       width: 100%;
       height: 100%;

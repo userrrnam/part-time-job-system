@@ -2,8 +2,7 @@
   <div class="user_card_container">
     <div class="personal_contant">
       <div class="avatar">
-        <a-avatar :size="58" style="background-color: #1890ff">
-          <!-- <template #icon><UserOutlined /></template> -->
+        <a-avatar :size="58" :style="{backgroundColor: userInfo.sex? bgc[0]: bgc[1]}">
           {{ userInfo.name.substr(-2, 2) }}
         </a-avatar>
       </div>
@@ -19,7 +18,7 @@
     </div>
     <div class="last_login_time margin_top">
       <span class="title">上次登录时间： </span>
-      <div class="time">{{ userInfo.lastTime }}</div>
+      <div class="time">{{ userInfo.lastTime !== "" ?  userInfo.lastTime : ''}}</div>
     </div>
   </div>
   <div class="expact_position" @click="changeInfoHandler">
@@ -33,7 +32,8 @@
         <span class="line"></span>
         <span>{{ userInfo.calculate }}</span>
         <span class="line"></span>
-        <span>{{ store.state.location }}</span>
+        <br/>
+        <span v-for="(item, index) in store.state.locations" :key="index">{{ item }}</span>
       </div>
     </div>
   </div>
@@ -50,6 +50,7 @@ export default {
   setup() {
     const { proxy: ins } = getCurrentInstance();
     const store = useStore();
+    const bgc = reactive(['#f56a00', '#1890ff']);
     const router = useRouter();
     const userInfo = reactive({
       name: "",
@@ -80,6 +81,7 @@ export default {
     return {
       userInfo,
       store,
+      bgc,
       changeInfoHandler,
     };
   },
@@ -153,7 +155,7 @@ export default {
       span:nth-child(1) {
         margin-left: 0;
       }
-      span {
+      span:not(nth-child(3)) {
         margin: 5px;
       }
       .line {

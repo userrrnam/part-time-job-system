@@ -7,7 +7,7 @@ const routes = [{
     path: '/user/login',
     name: 'user',
     meta: {
-      title: '登录'
+      title: '登录 | 注册'
     },
     component: () => import('@/views/user/Login.vue')
   },
@@ -18,14 +18,6 @@ const routes = [{
       title: '爱兼职'
     },
     component: () => import('@/views/home/Home.vue')
-  },
-  {
-    path: '/user/register',
-    name: 'Register',
-    meta: {
-      title: '注册'
-    },
-    component: () => import('@/views/user/Register.vue')
   },
   {
     path: '/user/person',

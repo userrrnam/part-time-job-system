@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { getToken } from './storage';
 import { message } from "ant-design-vue";
+import store from '@/store'
 import router from '@/router'
 // axios 配置
 const instance = axios.create({
@@ -11,22 +12,26 @@ const instance = axios.create({
   },
   timeout: 10000,
   baseURL: 'http://192.168.110.241:8080/', //接口请求地址
+  // baseURL: 'http://192.168.110.188:8080/', 
 })
 // 添加请求拦截器
 instance.interceptors.request.use(config => {
   let token = getToken();
+  store.commit("changLoading", true);
   if (token) {
     config.headers['Access-Token'] = token;
   }
   return config
 }, error => {
   // 对请求错误做些什么
+  store.commit("changLoading", false);
   return Promise.reject(error);
 })
 
 // 添加响应拦截器
 instance.interceptors.response.use(res => {
   // 对响应数据做点什么
+  store.commit("changLoading", false);
   const result = res?.data;
   //判断状态code是否为指定数值(200).
   if (res.status !== 200) {
@@ -38,6 +43,7 @@ instance.interceptors.response.use(res => {
   return result;
 }, error => {
   // 对响应错误做点什么
+  store.commit("changLoading", false);
   if (error.message ?.indexOf('Network Error') !== -1) {
     message.error("网络错误, 请检查网络!", 1);
   }

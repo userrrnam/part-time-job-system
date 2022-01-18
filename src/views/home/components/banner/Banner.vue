@@ -44,44 +44,11 @@
 import { getCurrentInstance, reactive, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { useConsteEffect } from "./hooks";
-import provinces from "china-division/dist/provinces.json";
-import cities from "china-division/dist/cities.json";
-import areas from "china-division/dist/areas.json";
-
-areas.forEach((area) => {
-  const matchCity = cities.filter((city) => city.code === area.cityCode)[0];
-  if (matchCity) {
-    matchCity.children = matchCity.children || [];
-    matchCity.children.push({
-      label: area.name,
-      value: area.code,
-    });
-  }
-});
-
-cities.forEach((city) => {
-  const matchProvince = provinces.filter(
-    (province) => province.code === city.provinceCode
-  )[0];
-  if (matchProvince) {
-    matchProvince.children = matchProvince.children || [];
-    matchProvince.children.push({
-      label: city.name,
-      value: city.code,
-      children: city.children,
-    });
-  }
-});
-const options = provinces.map((province) => ({
-  label: province.name,
-  value: province.code,
-  children: province.children,
-}));
-
+import options from '@/util/cascader-address-options.js'
 export default {
   name: "Banner",
   setup() {
-    const { jobType } = useConsteEffect();
+    const { jobType, clearingForm } = useConsteEffect();
     const expectSalary = ref("");
     const { proxy: ins } = getCurrentInstance();
     const store = useStore();
@@ -91,24 +58,6 @@ export default {
     const value = ref([]);
     const cityCode = ref();
     const cityList = ref([]);
-    const clearingForm = reactive([
-      {
-        key: "00",
-        value: "不限",
-      },
-      {
-        key: "01",
-        value: "日结",
-      },
-      {
-        key: "02",
-        value: "周结",
-      },
-      {
-        key: "03",
-        value: "月结",
-      },
-    ]);
     const pageConfig = reactive({
       totalCount: "",
       totalPages: "",
@@ -171,37 +120,45 @@ export default {
     watch(
       () => store.state.city,
       () => {
-        const city = store.state.city.substr(0, 2);
-        const cityCode = store.state.city;
-        cityList.value.length = 0;
-        provinces.forEach((province) => {
-          if (province.code === city) {
-            province.children.filter((citys) => {
+        const provincesCode = store.state.city?.substr(0, 2);
+        const cityCode = store.state.city?.substr(0, 4);
+        const areasCode = store.state.city;
+        options.forEach((province) => {
+          if (province.value === provincesCode) {
+            province.children.forEach((citys) => {
               if (citys.value == cityCode) {
-                store.commit("saveLocation", citys.label);
-                citys.children?.forEach((areas) => {
+                citys.children.forEach((areas) => {
+                  if (areas.value === areasCode) {
+                    store.commit("saveLocations", [
+                      province.label,
+                      "/",
+                      citys.label,
+                      "/",
+                      areas.label,
+                    ]);
+                  }
                   cityList.value.push(areas);
-                  store.commit("saveCityName", [
-                    { label: "不限", value: "00" },
-                    ...cityList.value,
-                  ]);
                 });
               }
             });
           }
         });
+        store.commit("saveCityName", [
+          { label: "不限", value: "00" },
+          ...cityList.value,
+        ]);
       }
     );
     watch(
       () => selectJobParams,
       () => {
         store.commit("savaSelectJobParams", selectJobParams);
-      },{deep: true}
+      },
+      { deep: true }
     );
     return {
       cityList,
       store,
-      options,
       value,
       clearingForm,
       chooseJobType,

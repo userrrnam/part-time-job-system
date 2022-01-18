@@ -12,7 +12,6 @@
       layout="vertical"
       ref="formRef"
       @finish="handleFinish"
-      @validate="handleValidate"
     >
       <a-row :gutter="16">
         <a-col :span="12">
@@ -153,21 +152,8 @@
 
 <script>
 import { reactive, inject, ref, getCurrentInstance } from "vue";
-import provinces from "china-division/dist/provinces.json";
 import { useConsteEffect } from "@/views/home/components/banner/hooks.js";
-import cities from "china-division/dist/cities.json";
-import areas from "china-division/dist/areas.json";
-
-cities.forEach((city) => {
-  const matchProvince = provinces.filter(
-    (province) => province.code === city.provinceCode
-  )[0];
-});
-const options = provinces.map((province) => ({
-  label: province.name,
-  value: province.code,
-  children: province.children,
-}));
+import options from '@/util/cascader-address-options.js'
 
 export default {
   name: "Register",
@@ -207,8 +193,8 @@ export default {
         return Promise.reject("请输入密码");
       } else if (form.checkpassword !== "") {
         formRef.value.validateFields("checkpassword");
-      } else if (value.length > 16 || value.length < 6) {
-        return Promise.reject("密码长度不符合规则，建议6-16个字符");
+      } else if (value.length > 8 || value.length < 4) {
+        return Promise.reject("密码长度不符合规则，建议4-8个字符");
       }
       return Promise.resolve();
     };
@@ -225,7 +211,7 @@ export default {
       if (value === "") {
         return Promise.reject("请输入用户名");
       } else {
-        ins.$http
+        return ins.$http
           .post("/RegisterStudentUser/selectByStudentAccount", {
             studentAccount: form.studentAccount,
           })
@@ -265,18 +251,26 @@ export default {
       name: [{ required: true, message: "请输入真实姓名" }],
     };
     const onClose = () => {
-      // formRef.value.resetFields();
+      formRef.value.resetFields();
       visible.value = false;
+    };
+    const handleFinish = () => {
       delete form.checkpassword;
-      const { city, ...res } = form;
-      const state = { city: city[1], ...res };
-      console.log(state);
-    };
-    const handleFinish = (values) => {
-      console.log(values, form);
-    };
-    const handleValidate = (...args) => {
-      console.log(args);
+      const { city, sex, occupation, ...res } = form;
+      const state = {
+        city: city[city.length - 1],
+        sex: sex === "0" ? false : true,
+        occupation: occupation === "不限" ? "" : occupation,
+        ...res,
+      };
+      ins.$http.post("/RegisterStudentUser/insertOneStudnetUser", state).then(
+        (res) => {
+          console.log(res);
+        },
+        (err) => {
+          throw new Error(err);
+        }
+      );
     };
     return {
       form,
@@ -289,7 +283,6 @@ export default {
       calculateOptions,
       jobType,
       handleFinish,
-      handleValidate,
     };
   },
 };
