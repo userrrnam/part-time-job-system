@@ -1,9 +1,5 @@
 <template>
-  <router-view v-slot="{ Component }">
-    <keep-alive>
-      <component :is="Component" />
-    </keep-alive>
-  </router-view>
+  <router-view />
 </template>
 <script>
 export default {
@@ -15,6 +11,9 @@ export default {
   margin: 0;
   padding: 0;
   list-style: none;
+}
+body {
+  overflow-x: hidden;
 }
 #app {
   width: 100vw;

@@ -13,8 +13,6 @@
             <a-menu-item v-for="item in roleType" :key="item.key">
               {{ item.value }}
             </a-menu-item>
-            <!-- <a-menu-item key="job"> 我要找兼职 </a-menu-item>
-            <a-menu-item key="person"> 我要招人 </a-menu-item> -->
           </a-menu>
         </div>
         <a-form
@@ -57,40 +55,44 @@
               type="primary"
               html-type="submit"
               class="login-form-button"
-              :loading="loading"
             >
               登录
             </a-button>
           </a-form-item>
         </a-form>
-        <a class="register_button" @click="toRegister" v-if="!flag"
-          >没有账号?</a
-        >
+        <a class="register_button" @click="openDrawer" v-if="!flag">
+          没有账号?
+        </a >
       </div>
     </div>
+
+    <Ragister />
   </div>
 </template>
 
 <script>
-import { reactive, ref, getCurrentInstance } from "vue";
+import { reactive, ref, getCurrentInstance, provide } from "vue";
 import { useRouter } from "vue-router";
-import { useStore  } from 'vuex'
+import { useStore } from "vuex";
 import { message } from "ant-design-vue";
 import { setToken } from "@/util/storage.js";
 import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
+import Ragister from "./components/Register.vue";
 export default {
   name: "Login",
   components: {
     UserOutlined,
     LockOutlined,
+    Ragister,
   },
   setup() {
     const router = useRouter();
     const flag = ref(false);
     const formRef = ref();
     const store = useStore();
-    const loading = ref(false);
     const current = ref(["01"]);
+    const visible = ref(false);
+    provide("visible", visible);
     const { proxy: ins } = getCurrentInstance();
 
     const roleType = reactive([
@@ -109,6 +111,7 @@ export default {
         flag.value = false;
       } else {
         flag.value = true;
+        window.open("http://192.168.110.200:8003")
         formRef.value.resetFields();
       }
     };
@@ -117,27 +120,25 @@ export default {
       password: "",
     });
     const onFinish = (values) => {
-      loading.value = true;
       store.state.showNav = true;
-      ins.$http
-        .post("/LoginStudent/SelectOneStudentUser", values)
-        .then((res) => {
-            if (res.results.token) {
-              setToken(res.results.token);
-              message.success("登录成功!", 1);
-              router.push("/home");
-            }
-            loading.value = false;
-        }, (_) => {
-          loading.value = false;
-        });
+      ins.$http.post("/LoginStudent/SelectOneStudentUser", values).then(
+        (res) => {
+          if (res.results.token) {
+            setToken(res.results.token);
+            message.success("登录成功!", 1);
+            router.push("/home");
+          }
+        }
+      );
     };
     const toRegister = () => {
       router.push("/user/register");
     };
+    const openDrawer = () => {
+      visible.value = true;
+    };
     return {
       current,
-      loading,
       roleType,
       formRef,
       toRegister,
@@ -145,6 +146,7 @@ export default {
       formState,
       onFinish,
       flag,
+      openDrawer,
     };
   },
 };

@@ -7,7 +7,7 @@
           class="tips"
           v-for="(item, index) in store.state.cityName"
           :key="item.key"
-          :class="{active: index === areaCurrentIndex}"
+          :class="{ active: index === areaCurrentIndex }"
           @click="chooseCity(item, index)"
         >
           {{ item.label }}
@@ -17,8 +17,8 @@
         <span class="professionType">职业类型：</span>
         <a
           class="tips"
-          v-for="(item,index) in jobType"
-          :class="{active: index === JobCurrentIndex }"
+          v-for="(item, index) in jobType"
+          :class="{ active: index === JobCurrentIndex }"
           :key="item.key"
           @click="chooseJobType(item, index)"
         >
@@ -30,7 +30,7 @@
           class="tips"
           v-for="(item, index) in clearingForm"
           :key="item.key"
-          :class="{active: index === salaryCurrentIndex }"
+          :class="{ active: index === salaryCurrentIndex }"
           @click="chooseCalculate(item, index)"
         >
           {{ item.value }}
@@ -88,10 +88,13 @@ export default {
     const JobCurrentIndex = ref(0);
     const areaCurrentIndex = ref(0);
     const salaryCurrentIndex = ref(0);
+    const value = ref([]);
+    const cityCode = ref();
+    const cityList = ref([]);
     const clearingForm = reactive([
       {
         key: "00",
-        value: "全部",
+        value: "不限",
       },
       {
         key: "01",
@@ -110,7 +113,11 @@ export default {
       totalCount: "",
       totalPages: "",
     });
-
+    const selectJobParams = reactive({
+      city: "",
+      jobType: "",
+      calculate: "",
+    });
     //条件查询职位
     const getJobList = (params) => {
       ins.$http
@@ -135,27 +142,31 @@ export default {
     };
     const chooseCity = (vals, index) => {
       areaCurrentIndex.value = index;
-      getJobList({ city: vals.value });
+      if (vals.value === "00") {
+        selectJobParams.city = "";
+      } else {
+        selectJobParams.city = vals.value;
+      }
+      getJobList(selectJobParams);
     };
     const chooseJobType = (val, index) => {
       JobCurrentIndex.value = index;
-      if (val.key === "00") {
-        getJobList();
+      if (val.value === "不限") {
+        selectJobParams.jobType = "";
       } else {
-        getJobList({ jobType: val.value });
+        selectJobParams.jobType = val.value;
       }
+      getJobList(selectJobParams);
     };
     const chooseCalculate = (item, index) => {
       salaryCurrentIndex.value = index;
-      if (item.key === "00") {
-        getJobList();
+      if (item.value === "不限") {
+        selectJobParams.calculate = "";
       } else {
-        getJobList({ calculate: item.value });
+        selectJobParams.calculate = item.value;
       }
+      getJobList(selectJobParams);
     };
-    const value = ref([]);
-    const cityCode = ref();
-    const cityList = ref([]);
 
     watch(
       () => store.state.city,
@@ -168,9 +179,12 @@ export default {
             province.children.filter((citys) => {
               if (citys.value == cityCode) {
                 store.commit("saveLocation", citys.label);
-                citys.children.forEach((areas) => {
+                citys.children?.forEach((areas) => {
                   cityList.value.push(areas);
-                  store.commit("saveCityName", [{label: '全市', key: '00'},...cityList.value]);
+                  store.commit("saveCityName", [
+                    { label: "不限", value: "00" },
+                    ...cityList.value,
+                  ]);
                 });
               }
             });
@@ -178,7 +192,12 @@ export default {
         });
       }
     );
-
+    watch(
+      () => selectJobParams,
+      () => {
+        store.commit("savaSelectJobParams", selectJobParams);
+      },{deep: true}
+    );
     return {
       cityList,
       store,
@@ -225,7 +244,7 @@ export default {
         color: #ff8a00;
       }
     }
-    .active{
+    .active {
       color: #ff8a00;
     }
     .hot_city {

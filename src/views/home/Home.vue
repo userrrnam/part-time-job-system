@@ -9,7 +9,7 @@
           v-for="(item, index) in store.state.jobList"
           :key="index"
         >
-          <JobInfo :workInfo="item" :index="index" @refreshPage="getWorkInfo" />
+          <JobInfo :workInfo="item" :index="index" />
         </div>
         <div class="pageation">
           <a-pagination
@@ -65,7 +65,7 @@ export default {
           workInfo.length = 0;
           workInfo.push(...res.results);
           workInfo?.forEach((vals) => {
-            store.state?.cityName?.filter((item) => {
+            store.state.cityName?.forEach((item) => {
               if (item.value == vals.city) {
                 vals.cityName = item.label;
               }

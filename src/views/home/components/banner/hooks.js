@@ -2,7 +2,7 @@ import { reactive } from 'vue'
 export const useConsteEffect = () => {
     const jobType = reactive([{
             key: '00',
-            value: '全部'
+            value: '不限'
         }, {
             key: '01',
             value: '计算机/网络/技术类'

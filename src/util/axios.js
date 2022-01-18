@@ -39,7 +39,7 @@ instance.interceptors.response.use(res => {
 }, error => {
   // 对响应错误做点什么
   if (error.message ?.indexOf('Network Error') !== -1) {
-    message.error("请求超时, 请检查网络!");
+    message.error("网络错误, 请检查网络!", 1);
   }
   if (error.response) {
     if (error.response.status === 401) {

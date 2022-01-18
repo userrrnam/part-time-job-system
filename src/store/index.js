@@ -15,6 +15,8 @@ export default createStore({
     cityName: '',
     //用户所在地
     location:'',
+    //查询条件
+    selectJobParams: {},
   },
   mutations: {
     changeShow(state, value) {
@@ -37,6 +39,9 @@ export default createStore({
     },
     saveLocation(state, value) {
       state.location = value;
+    },
+    savaSelectJobParams(state, value) {
+      state.selectJobParams = value;
     }
   },
   actions: {},

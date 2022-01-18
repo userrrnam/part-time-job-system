@@ -85,16 +85,22 @@
 
 <script>
 import { reactive, ref, getCurrentInstance } from "vue";
+import { useStore } from "vuex";
 import { message } from "ant-design-vue";
 import Modal from "./detail-modal/Modal.vue";
 export default {
   name: "JobInfo",
   props: ["workInfo", "index"],
   components: { Modal },
-  setup(_, { emit }) {
+  setup() {
     const showModal = ref(false);
+    const store = useStore();
     const colorList = ["#daefff", "#daffea", "#ffe3e3", "#ffeada"];
     const fontColor = ["#61bff9", "#7acba1", "#f8ad82", "#f97d61"];
+    const pageConfig = reactive({
+      totalCount: "",
+      totalPages: "",
+    });
     const { proxy: ins } = getCurrentInstance();
     const replayParams = reactive({
       companyId: "",
@@ -115,9 +121,30 @@ export default {
       ins.$http.post("/StudentHomePage/applyJob", replayParams).then((res) => {
         if (!res.results) {
           message.success("申请成功！");
-          emit("refreshPage", { page: 1, size: 8 });
+          getJobList(store.state.selectJobParams);
         }
       });
+    };
+    const getJobList = (params) => {
+      ins.$http
+        .post("/StudentHomePage/selectCompanyByCondition", {
+          ...params,
+          page: 1,
+          size: 10,
+        })
+        .then((res) => {
+          pageConfig.totalCount = res.totalCount;
+          pageConfig.totalPages = res.totalPages;
+          res.results?.forEach((vals) => {
+            store.state.cityName.filter((item) => {
+              if (item.value == vals.city) {
+                vals.cityName = item.label;
+              }
+            });
+          });
+          store.commit("saveJobList", res.results);
+          store.commit("savePageConfig", pageConfig);
+        });
     };
     //查看公司详情
     let displyModal = ref(false);
