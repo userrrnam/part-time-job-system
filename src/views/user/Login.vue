@@ -55,6 +55,7 @@
               type="primary"
               html-type="submit"
               class="login-form-button"
+              :loading="store.state.loading"
             >
               登录
             </a-button>
@@ -76,6 +77,7 @@ import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { message } from "ant-design-vue";
 import { setToken } from "@/util/storage.js";
+import md5 from 'js-md5';
 import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
 import Ragister from "./components/Register.vue";
 export default {
@@ -121,9 +123,11 @@ export default {
     });
     const onFinish = (values) => {
       store.state.showNav = true;
-      ins.$http.post("/LoginStudent/SelectOneStudentUser", values).then(
+      const { password, studentAccount } = values;
+      console.log(md5(password))
+      ins.$http.post("/LoginStudent/SelectOneStudentUser", {password: md5(password), studentAccount}).then(
         (res) => {
-          if (res.results.token) {
+          if (res.results?.token) {
             setToken(res.results.token);
             message.success("登录成功!", 1);
             router.push("/home");
@@ -138,6 +142,7 @@ export default {
       visible.value = true;
     };
     return {
+      store,
       current,
       roleType,
       formRef,

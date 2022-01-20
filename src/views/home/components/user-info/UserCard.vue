@@ -2,7 +2,10 @@
   <div class="user_card_container">
     <div class="personal_contant">
       <div class="avatar">
-        <a-avatar :size="58" :style="{backgroundColor: userInfo.sex? bgc[0]: bgc[1]}">
+        <a-avatar
+          :size="58"
+          :style="{ backgroundColor: userInfo.avtarColor }"
+        >
           {{ userInfo.name.substr(-2, 2) }}
         </a-avatar>
       </div>
@@ -18,7 +21,9 @@
     </div>
     <div class="last_login_time margin_top">
       <span class="title">上次登录时间： </span>
-      <div class="time">{{ userInfo.lastTime !== "" ?  userInfo.lastTime : ''}}</div>
+      <div class="time">
+        {{ userInfo.lastTime !== "" ? userInfo.lastTime : "" }}
+      </div>
     </div>
   </div>
   <div class="expact_position" @click="changeInfoHandler">
@@ -28,12 +33,14 @@
     </div>
     <div class="contant">
       <div class="work_info">
-        <span>{{ userInfo.occupation }}</span>
+        <span>{{ userInfo.occupation ? userInfo.occupation : "不限" }}</span>
         <span class="line"></span>
         <span>{{ userInfo.calculate }}</span>
         <span class="line"></span>
-        <br/>
-        <span v-for="(item, index) in store.state.locations" :key="index">{{ item }}</span>
+        <br />
+        <span v-for="(item, index) in store.state.locations" :key="index">{{
+          item
+        }}</span>
       </div>
     </div>
   </div>
@@ -50,7 +57,6 @@ export default {
   setup() {
     const { proxy: ins } = getCurrentInstance();
     const store = useStore();
-    const bgc = reactive(['#f56a00', '#1890ff']);
     const router = useRouter();
     const userInfo = reactive({
       name: "",
@@ -59,6 +65,7 @@ export default {
       occupation: "",
       lastTime: "",
       calculate: "",
+      avtarColor: "",
     });
     onBeforeMount(() => {
       ins.$http.post("/StudentHomePage/selectInformationHome").then((res) => {
@@ -70,6 +77,7 @@ export default {
           userInfo.lastTime = lastLoginTime;
           userInfo.sex = sex;
           userInfo.calculate = calculate;
+          userInfo.avtarColor = sex ?  "#f56a00" : "#1890ff";
           store.commit("saveUserInfo", userInfo);
           store.commit("saveCity", city);
         }
@@ -81,7 +89,6 @@ export default {
     return {
       userInfo,
       store,
-      bgc,
       changeInfoHandler,
     };
   },

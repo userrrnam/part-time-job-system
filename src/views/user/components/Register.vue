@@ -5,12 +5,14 @@
     :visible="visible"
     :body-style="{ paddingBottom: '80px' }"
     @close="onClose"
+    :closable="false"
   >
     <a-form
       :model="form"
       :rules="rules"
       layout="vertical"
       ref="formRef"
+      v-if="!results"
       @finish="handleFinish"
     >
       <a-row :gutter="16">
@@ -147,14 +149,24 @@
         <a-button type="primary" html-type="submit">注册</a-button>
       </div>
     </a-form>
+    <a-result
+      v-if="results"
+      status="success"
+      title="账号创建成功!"
+      sub-title="Order number: 2017182818828182881 Cloud server configuration takes 1-5 minutes, please wait."
+    >
+      <template #extra>
+        <a-button type="primary" @click="goLogin">去登录</a-button>
+      </template>
+    </a-result>
   </a-drawer>
 </template>
 
 <script>
 import { reactive, inject, ref, getCurrentInstance } from "vue";
 import { useConsteEffect } from "@/views/home/components/banner/hooks.js";
-import options from '@/util/cascader-address-options.js'
-
+import options from "@/util/cascader-address-options.js";
+import md5 from 'js-md5';
 export default {
   name: "Register",
   setup() {
@@ -162,6 +174,7 @@ export default {
     const visible = inject("visible");
     const { proxy: ins } = getCurrentInstance();
     const { jobType } = useConsteEffect();
+    const results = ref(false);
     const form = reactive({
       //学生账号
       studentAccount: "",
@@ -254,20 +267,26 @@ export default {
       formRef.value.resetFields();
       visible.value = false;
     };
+    const goLogin = () => {
+      visible.value = false;
+    }
     const handleFinish = () => {
       delete form.checkpassword;
-      const { city, sex, occupation, ...res } = form;
+      const { city, sex, occupation,password, ...res } = form;
       const state = {
         city: city[city.length - 1],
         sex: sex === "0" ? false : true,
+        password: md5(password),
         occupation: occupation === "不限" ? "" : occupation,
         ...res,
       };
       ins.$http.post("/RegisterStudentUser/insertOneStudnetUser", state).then(
         (res) => {
           console.log(res);
+          results.value = true;
         },
         (err) => {
+          results.value = false;
           throw new Error(err);
         }
       );
@@ -277,8 +296,10 @@ export default {
       rules,
       visible,
       formRef,
+      goLogin,
       onClose,
       visible,
+      results,
       options,
       calculateOptions,
       jobType,

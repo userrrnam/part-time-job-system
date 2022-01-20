@@ -5,11 +5,6 @@ import store from '@/store'
 import router from '@/router'
 // axios 配置
 const instance = axios.create({
-  headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json;charset=UTF-8',
-    'Access-Token': getToken(),
-  },
   timeout: 10000,
   baseURL: 'http://192.168.110.241:8080/', //接口请求地址
   // baseURL: 'http://192.168.110.188:8080/', 
@@ -44,16 +39,20 @@ instance.interceptors.response.use(res => {
 }, error => {
   // 对响应错误做点什么
   store.commit("changLoading", false);
-  if (error.message ?.indexOf('Network Error') !== -1) {
+  if (error.message?.indexOf('Network Error') !== -1) {
     message.error("网络错误, 请检查网络!", 1);
+  } else if (error.message?.indexOf("timeout of 10000ms exceeded") !== -1) {
+    message.error("请求超时，检查网络再试！");
+    return;
   }
   if (error.response) {
     if (error.response.status === 401) {
       router.replace('/user/login');
       message.error('登录过期，重新登录!', 1);
     } else {
-       const { errorMsg } = error.response.data;
+      const { errorMsg } = error.response.data;
       message.error({ content: errorMsg, duration: 1 });
+      return;
     }
   }
   return error;
