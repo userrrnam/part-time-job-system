@@ -10,6 +10,7 @@
           v-model:value="searchValue"
           placeholder="搜索职位"
           @search="onSearch"
+          allowClear
         />
       </div>
       <div class="right">

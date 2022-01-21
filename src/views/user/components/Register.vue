@@ -42,9 +42,8 @@
       <a-row :gutter="16">
         <a-col :span="12">
           <a-form-item has-feedback label="密码" name="password">
-            <a-input
+            <a-input-password
               v-model:value="form.password"
-              type="password"
               autocomplete="off"
               placeholder="请输入密码"
             />
@@ -52,9 +51,8 @@
         </a-col>
         <a-col :span="12">
           <a-form-item has-feedback label="确认密码" name="checkpassword">
-            <a-input
+            <a-input-password
               v-model:value="form.checkpassword"
-              type="password"
               autocomplete="off"
               placeholder="确认密码"
             />
@@ -63,7 +61,7 @@
       </a-row>
       <a-row :gutter="16">
         <a-col :span="12">
-          <a-form-item label="城市" name="city">
+          <a-form-item label="期望工作城市" name="city">
             <a-cascader
               v-model:value="form.city"
               :options="options"

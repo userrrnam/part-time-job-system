@@ -1,12 +1,11 @@
 <template>
   <div class="apply_contaniner">
     <Navigation />
-    <div class="breadcrumb">
-      <a-breadcrumb>
-        <a-breadcrumb-item @click="goHome" style="cursor: pointer">爱兼职</a-breadcrumb-item>
-        <a-breadcrumb-item>我的申请</a-breadcrumb-item>
-      </a-breadcrumb>
-    </div>
+    <BreakCrumb>
+    <template #title>
+      我的申请
+    </template>
+    </BreakCrumb>
     <!-- <Banner /> -->
     <div class="apply_wrapper">
       <div class="apply_jobList">
@@ -32,6 +31,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import Navigation from "@/components/nav/Navigation.vue";
+import BreakCrumb from "@/components/bread-crumb/BreakCrumb.vue"
 import Sketch from "./components/Sketch.vue";
 import ApplyItem from "./components/ApplyItem.vue";
 import Footer from "@/components/footer/Footer.vue";
@@ -41,6 +41,7 @@ export default {
   name: "MyApply",
   components: {
     Navigation,
+    BreakCrumb,
     Footer,
     RecentNews,
     Sketch,

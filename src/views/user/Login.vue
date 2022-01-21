@@ -124,7 +124,6 @@ export default {
     const onFinish = (values) => {
       store.state.showNav = true;
       const { password, studentAccount } = values;
-      console.log(md5(password))
       ins.$http.post("/LoginStudent/SelectOneStudentUser", {password: md5(password), studentAccount}).then(
         (res) => {
           if (res.results?.token) {

@@ -76,7 +76,7 @@
       </div>
       <a-button
         class="replay"
-        @click="replyHandle(workInfo.jobId, workInfo.companyId)"
+        @click="replyHandle(workInfo.jobId, workInfo.companyId, workInfo.updateTime)"
         >申请职位</a-button
       >
     </div>
@@ -105,6 +105,7 @@ export default {
     const replayParams = reactive({
       companyId: "",
       jobId: "",
+      updateTime: "",
     });
     // 查看职位要求
     const checkInfo = () => {
@@ -115,9 +116,10 @@ export default {
       showModal.value = false;
     };
     //申请职位
-    const replyHandle = (e, v) => {
+    const replyHandle = (e, v, t) => {
       replayParams.companyId = v;
       replayParams.jobId = e;
+      replayParams.updateTime = t;
       ins.$http.post("/StudentHomePage/applyJob", replayParams).then((res) => {
         if (!res.results) {
           message.success("申请成功！");

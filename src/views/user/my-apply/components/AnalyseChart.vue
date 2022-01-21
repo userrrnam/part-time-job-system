@@ -6,7 +6,7 @@
     <template #title>  
       <span>仅统计已下线的职位！</span>
       </template>
-       <a style="color: #faad14"><QuestionCircleOutlined /></a>
+       <a><QuestionCircleOutlined /></a>
     </a-tooltip>
   </div>
   <div id="myChart"></div>
@@ -60,7 +60,7 @@ export default {
                   show: false,
                 },
                 data: [
-                  { value: pass, name: "通过" },
+                  { value: pass, name: "已通过" },
                   { value: noPass, name: "未通过" },
                 ],
               },
