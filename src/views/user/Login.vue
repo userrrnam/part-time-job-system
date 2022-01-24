@@ -23,11 +23,11 @@
           @finish="onFinish"
         >
           <a-form-item
-            name="studentAccount"
+            name="account"
             :rules="[{ required: true, message: '请输入账号!' }]"
           >
             <a-input
-              v-model:value="formState.studentAccount"
+              v-model:value="formState.account"
               placeholder="账号"
               autocomplete="off"
             >
@@ -63,7 +63,7 @@
         </a-form>
         <a class="register_button" @click="openDrawer" v-if="!flag">
           没有账号?
-        </a >
+        </a>
       </div>
     </div>
 
@@ -77,7 +77,7 @@ import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { message } from "ant-design-vue";
 import { setToken } from "@/util/storage.js";
-import md5 from 'js-md5';
+import md5 from "js-md5";
 import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
 import Ragister from "./components/Register.vue";
 export default {
@@ -113,26 +113,41 @@ export default {
         flag.value = false;
       } else {
         flag.value = true;
-        window.open("http://192.168.110.200:8003")
         formRef.value.resetFields();
       }
     };
     const formState = reactive({
-      studentAccount: "",
+      account: "",
       password: "",
     });
     const onFinish = (values) => {
       store.state.showNav = true;
-      const { password, studentAccount } = values;
-      ins.$http.post("/LoginStudent/SelectOneStudentUser", {password: md5(password), studentAccount}).then(
-        (res) => {
-          if (res.results?.token) {
+      const { password, account } = values;
+      if (!flag.value) {
+        ins.$http
+          .post("/LoginStudent/SelectOneStudentUser", {
+            password: md5(password),
+            studentAccount: account,
+          })
+          .then((res) => {
+            if (res.results?.token) {
+              setToken(res.results.token);
+              message.success("登录成功!", 1);
+              router.push("/home");
+            }
+          });
+      } else {
+        ins.$http
+          .post("/LoginCompany/SelectOneCompanyUser", {
+            companyAccount: account,
+            password: md5(password),
+          })
+          .then((res) => {
             setToken(res.results.token);
             message.success("登录成功!", 1);
-            router.push("/home");
-          }
-        }
-      );
+            router.push("/company/home");
+          });
+      }
     };
     const toRegister = () => {
       router.push("/user/register");

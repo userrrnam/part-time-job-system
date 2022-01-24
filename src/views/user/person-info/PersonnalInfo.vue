@@ -28,7 +28,7 @@
                   <span>修改密码</span>
                 </template>
                 <a @click="changePass()">
-                  <LockOutlined style="marginleft: 10px; cursor: pointer" />
+                  <LockOutlined style="marginLeft: 10px; cursor: pointer" />
                 </a>
               </a-tooltip>
             </div>

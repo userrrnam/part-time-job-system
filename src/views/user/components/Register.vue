@@ -104,9 +104,9 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label="期望工作" name="occupation">
+          <a-form-item label="期望工作类型" name="occupation">
             <a-select
-              placeholder="请选择工作类型"
+              placeholder="请选择职业类型"
               v-model:value="form.occupation"
             >
               <a-select-option
