@@ -4,6 +4,24 @@
       <div class="logo">
         <img src="@/assets/logo.png" alt="" />
       </div>
+      <div class="user">
+        <a-dropdown>
+          <span class="ant-dropdown-link" @click.prevent>
+            {{ companyName?.substr(0, 4) }}
+            <DownOutlined />
+          </span>
+          <template #overlay>
+            <a-menu>
+              <a-menu-item>
+                <span>个人信息</span>
+              </a-menu-item>
+              <a-menu-item>
+                <span>退出登录</span>
+              </a-menu-item>
+            </a-menu>
+          </template>
+        </a-dropdown>
+      </div>
     </a-layout-header>
     <a-layout>
       <a-layout-sider breakpoint="lg">
@@ -44,11 +62,9 @@
         <a-layout-content
           :style="{ margin: '24px 16px 0', minHeight: 'calc(100vh - 138px)' }"
         >
-          <div style="minheight: 90vh">
             <router-view />
-          </div>
         </a-layout-content>
-        <a-layout-footer style="text-align: center">
+        <a-layout-footer style="text-align: center;">
           爱兼职 2022 Created by Ai Jian Zhi
         </a-layout-footer>
       </a-layout>
@@ -62,23 +78,39 @@ import {
   MailOutlined,
   CalendarOutlined,
   AppstoreOutlined,
+  DownOutlined,
   SettingOutlined,
 } from "@ant-design/icons-vue";
-import { reactive, toRefs } from "vue";
+import { reactive, toRefs, getCurrentInstance, onBeforeMount, ref } from "vue";
 export default {
   name: "CompanyHome",
   components: {
     MailOutlined,
+    DownOutlined,
     CalendarOutlined,
     AppstoreOutlined,
     SettingOutlined,
   },
   setup() {
     const router = useRouter();
+    const companyName = ref();
     const state = reactive({
       mode: "inline",
       theme: "light",
       selectedKeys: ["0"],
+    });
+    const { proxy: ins } = getCurrentInstance();
+    const getCompanyInfo = () => {
+      ins.$http
+        .post("/CompanyInformation/selectOneCompanyUserInformation")
+        .then((res) => {
+          if (res.results) {
+            companyName.value = res.results.companyName;
+          }
+        });
+    };
+    onBeforeMount(() => {
+      getCompanyInfo();
     });
     const menuHandler = (params) => {
       const { key } = params;
@@ -98,6 +130,7 @@ export default {
       }
     };
     return {
+      companyName,
       ...toRefs(state),
       menuHandler,
     };
@@ -112,10 +145,20 @@ export default {
     float: left;
     width: 120px;
     height: 31px;
+    line-height: 44px;
     margin: 16px 24px 16px 0;
     img {
       width: 100%;
       transform: translateY(-40%);
+    }
+  }
+  .user {
+    float: right;
+    line-height: 44px;
+    color: white;
+    .ant-dropdown-link {
+      display: inline-block;
+      height: 44px;
     }
   }
 }

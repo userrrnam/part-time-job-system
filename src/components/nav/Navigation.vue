@@ -17,9 +17,9 @@
         <a-dropdown>
           <a class="ant-dropdown-link" @click.prevent>
             <UserOutlined
-              style="fontsize: 22px; color: white; marginright: 5px"
+              style="font-size: 22px; color: white; margin-right: 5px"
             />
-            <CaretDownOutlined style="fontsize: 12px; color: white" />
+            <CaretDownOutlined style="font-size: 12px; color: white" />
           </a>
           <template #overlay>
             <a-menu>

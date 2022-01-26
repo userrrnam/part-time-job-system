@@ -1,4 +1,4 @@
-const userInfo = 'Access-Token'
+const userInfo = 'Token'
 export function setToken(token) {
     localStorage.setItem(userInfo, token);
 }

@@ -41,11 +41,19 @@ const routes = [{
     meta: {
       title: '爱兼职 | 公司管理平台'
     },
-    component: () => import("@/views/company/CompanyHome.vue"),
+    component: () => import("@/views/company/Company.vue"),
     children:[
       {
         path: '/company',
         redirect: '/company/home'
+      },
+      {
+        path: '/company/home',
+        name: "companyhome",
+        meta: {
+          title: "分析页"
+        },
+        component: () => import("@/views/company/home/CompanyHome.vue")
       },
       {
         path: '/company/jobManage',

@@ -258,7 +258,7 @@ export default {
       occupation: [{ required: true, message: "请选择工作类型" }],
       age: [{ required: true, message: "请输入年龄" }],
       phone: [{ required: true, validator: validatorPhone, trigger: "change" }],
-      email: [{ type: "email", message: "不是有效的电子邮件" }],
+      email: [{ type: "email", message: "输入正确邮件" }],
       name: [{ required: true, message: "请输入真实姓名" }],
     };
     const onClose = () => {
