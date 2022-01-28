@@ -6,8 +6,8 @@ import router from '@/router'
 // axios 配置
 const instance = axios.create({
   timeout: 10000,
-  baseURL: 'http://192.168.110.241:8080/', //接口请求地址
-  // baseURL: 'http://192.168.110.188:8080/', 
+  // baseURL: 'http://192.168.110.241:8080/', //接口请求地址
+  baseURL: 'http://192.168.110.188:8080/', 
 })
 // 添加请求拦截器
 instance.interceptors.request.use(config => {

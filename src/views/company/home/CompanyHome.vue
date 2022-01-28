@@ -8,6 +8,10 @@
     </template>
     <div class="sketch_container">
       <div class="sketch_item">
+        <a-typography-title>{{ state.all }}</a-typography-title>
+        <span>所有职位</span>
+      </div>
+      <div class="sketch_item">
         <a-typography-title>{{ state.start }}</a-typography-title>
         <span>上线职位</span>
       </div>
@@ -23,21 +27,27 @@
 import { getCurrentInstance, onBeforeMount, reactive } from "vue";
 import { ScheduleOutlined } from "@ant-design/icons-vue";
 export default {
-  name: "JobMange",
+  name: "CompanyHome",
   components: { ScheduleOutlined },
   setup() {
     const { proxy: ins } = getCurrentInstance();
     const state = reactive({
-      start: "",
-      end: "",
+      start: 0,
+      end: 0,
+      all: 0,
     });
     const getCount = () => {
-      ins.$http.post("/CompanyPosition/countPosition").then((res) => {
+      ins.$http.post("/CompanyHome/countPosition").then((res) => {
         if (res.results) {
-          const { start, end } = res.results;
+          const { start, end, all } = res.results;
           state.start = start;
           state.end = end;
+          state.all = all;
+          console.log(res.results);
         }
+      });
+      ins.$http.post("/CompanyHome/countApproval").then((res) => {
+        console.log(res);
       });
     };
     onBeforeMount(() => {
@@ -45,7 +55,7 @@ export default {
     });
     return {
       state,
-      getCount
+      getCount,
     };
   },
 };

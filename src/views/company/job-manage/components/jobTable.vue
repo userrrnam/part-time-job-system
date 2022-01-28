@@ -1,65 +1,63 @@
 <template>
-  <div>
-    <a-table
-      :columns="columns"
-      :data-source="jobList"
-      :rowKey="(record) => record.jobId"
-      :loading="loading"
-      :pagination="pagination"
-      @change="handleTableChange"
-    >
-      <template #name="{ text }">
-        <a>{{ text }}</a>
-      </template>
-      <template #title>
-        <div class="hearder">
-          <a-button type="primary" @click="addJob">
-            <template #icon><PlusOutlined /></template>
-            新增
-          </a-button>
-          <a-select
-            ref="select"
-            v-model:value="value1"
-            style="width: 120px"
-            :options="options1"
-            @change="handleChange"
-          >
-          </a-select>
-        </div>
-      </template>
-      <template #customTitle>
-        <span> 职位名称 </span>
-      </template>
-      <template #action="{ record }">
-        <a-popconfirm
-          v-if="record.status"
-          title="审核中的职位会被自动拒绝，确定要下线吗?"
-          @confirm="onOrDownline(record.jobId)"
+  <a-table
+    :columns="columns"
+    :data-source="jobList"
+    :rowKey="(record) => record.jobId"
+    :loading="loading"
+    :pagination="pagination"
+    @change="handleTableChange"
+  >
+    <template #name="{ text }">
+      <a>{{ text }}</a>
+    </template>
+    <template #title>
+      <div class="header">
+        <a-button type="primary" @click="addJob">
+          <template #icon><PlusOutlined /></template>
+          新增
+        </a-button>
+        <a-select
+          ref="select"
+          v-model:value="value1"
+          style="width: 120px"
+          :options="options1"
+          @change="handleChange"
         >
-          <a>下线</a>
-        </a-popconfirm>
-        <a-popconfirm
-          v-if="!record.status"
-          title="确定要上线吗?"
-          @confirm="onOrDownline(record.jobId)"
-        >
-          <a>上线</a>
-        </a-popconfirm>
-        <a @click="editItem(record.jobId)" style="margin-left: 20px">编辑</a>
-        <a @click="checkItem(record.jobId)" style="margin-left: 20px">查看</a>
-      </template>
-    </a-table>
-    <JobModal
-      ref="modalRef"
-      :forms="jobInfo"
-      :showModal="showModal"
-      @ok="handleOk"
-      :action="action"
-      :readOnly="readOnly"
-      @cancel="closeModal"
-      :title="title"
-    />
-  </div>
+        </a-select>
+      </div>
+    </template>
+    <template #customTitle>
+      <span> 职位名称 </span>
+    </template>
+    <template #action="{ record }">
+      <a-popconfirm
+        v-if="record.status"
+        title="审核中的职位会被自动拒绝，确定要下线吗?"
+        @confirm="onOrDownline(record.jobId)"
+      >
+        <a>下线</a>
+      </a-popconfirm>
+      <a-popconfirm
+        v-if="!record.status"
+        title="确定要上线吗?"
+        @confirm="onOrDownline(record.jobId)"
+      >
+        <a>上线</a>
+      </a-popconfirm>
+      <a @click="editItem(record.jobId)" style="margin-left: 20px">编辑</a>
+      <a @click="checkItem(record.jobId)" style="margin-left: 20px">查看</a>
+    </template>
+  </a-table>
+  <JobModal
+    ref="modalRef"
+    :forms="jobInfo"
+    :showModal="showModal"
+    @ok="handleOk"
+    :action="action"
+    :readOnly="readOnly"
+    @cancel="closeModal"
+    :title="title"
+  />
 </template>
 
 <script>
@@ -103,8 +101,8 @@ export default {
       total: 0,
       pageSize: 0,
       current: 1,
-      showTotal: total => `总共 ${total} 条`
-    })
+      showTotal: (total) => `总共 ${total} 条`,
+    });
     const options1 = ref([
       {
         value: "",
@@ -140,7 +138,10 @@ export default {
     const getJobTable = () => {
       loading.value = true;
       ins.$http
-        .post("/CompanyPosition/selectPosition", {status: flag.value, ...pageConfig})
+        .post("/CompanyPosition/selectPosition", {
+          status: flag.value,
+          ...pageConfig,
+        })
         .then((res) => {
           if (res.results) {
             pagination.total = res.totalCount;
@@ -155,14 +156,14 @@ export default {
       getJobTable();
     });
     // 筛选线上或线下
-    const flag = ref('');
+    const flag = ref("");
     const handleChange = (value) => {
-      if(value === 0) {
+      if (value === 0) {
         flag.value = true;
-      } else if(value === 1){
+      } else if (value === 1) {
         flag.value = false;
       } else {
-        flag.value = '';
+        flag.value = "";
       }
       getJobTable();
     };
@@ -304,7 +305,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.hearder {
+.header {
   padding: 0 20px;
   button {
     margin-right: 20px;

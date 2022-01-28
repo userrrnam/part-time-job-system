@@ -25,6 +25,7 @@
               v-model:value="form.newPassword"
               placeholder="请输入原密码"
               autocomplete="off"
+              :disabled="!flag"
             />
           </a-form-item>
         </a-col>
@@ -33,10 +34,12 @@
             <a-input-password
               v-model:value="form.checkPassword"
               placeholder="请输入原密码"
+              :disabled="!flag"
               autocomplete="off"
             />
           </a-form-item>
         </a-col>
+        <a-button type="primary" html-type="submit">修改</a-button>
       </a-form>
     </div>
   </div>
@@ -44,31 +47,32 @@
 
 <script>
 import { reactive, getCurrentInstance, ref } from "vue";
+import { message } from "ant-design-vue";
 import md5 from "js-md5";
 export default {
   name: "ModifyPasswrod",
   setup() {
     const formRef = ref();
+    const flag = ref(false);
     const { proxy: ins } = getCurrentInstance();
     const form = reactive({
       oldPassword: "",
       newPassword: "",
       checkPassword: "",
     });
-    const getOldPassword = () => {
-      ins.$http
-        .post("/CompanyInformation/selectPassword", {
-          password: md5(form.oldPassword),
-        })
-        .then((res) => {
-          return res;
-        });
-    };
     const handleFinish = () => {
       const { newPassword } = form;
-      ins.$http.post("", { password: newPassword }).then((res) => {
-        console.log(res);
-      });
+      ins.$http
+        .post("/CompanyInformation/updateCompanyInformation", {
+          password: md5(newPassword),
+        })
+        .then((res) => {
+          if (res.results) {
+            message.success("修改成功", 1);
+            formRef.value.resetFields();
+            flag.value = false;
+          }
+        });
     };
     let validateOldPassword = async (_rule, value) => {
       if (value === "") {
@@ -79,11 +83,13 @@ export default {
             password: md5(form.oldPassword),
           })
           .then((res) => {
-            if(res.results) {
+            if (res.results) {
+              flag.value = true;
               return Promise.resolve();
             }
+            flag.value = false;
             return Promise.reject("密码错误");
-          })
+          });
       }
     };
     let validatepassword = async (_rule, value) => {
@@ -120,6 +126,7 @@ export default {
       form,
       handleFinish,
       formRef,
+      flag,
       rules,
     };
   },

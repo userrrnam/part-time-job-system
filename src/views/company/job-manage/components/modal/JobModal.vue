@@ -1,6 +1,11 @@
 <template>
   <a-modal v-model:visible="showModal" :title="title" :footer="null">
-    <a-form :model="form" :rules="rules" ref="formRef" @finish="handleFinish">
+    <a-form
+      :model="form"
+      :rules="rules"
+      ref="formRef"
+      @finish="handleFinish"
+    >
       <a-form-item label="职位名称" name="jobName">
         <a-input
           v-model:value="form.jobName"
@@ -155,6 +160,7 @@ export default {
       emit("cancel");
     };
     const handleFinish = () => {
+      console.log(1);
       emit("ok", form);
     };
     const clearForm = () => {

@@ -12,10 +12,12 @@
           </span>
           <template #overlay>
             <a-menu>
-              <a-menu-item>
-                <span>个人信息</span>
+              <a-menu-item @click="personCenter">
+                <UserOutlined />
+                <span>个人中心</span>
               </a-menu-item>
-              <a-menu-item>
+              <a-menu-item @click="handlerExit">
+                <PoweroffOutlined />
                 <span>退出登录</span>
               </a-menu-item>
             </a-menu>
@@ -34,7 +36,7 @@
         >
           <a-menu-item key="0">
             <template #icon>
-              <MailOutlined />
+              <HomeOutlined />
             </template>
             首页
           </a-menu-item>
@@ -52,9 +54,9 @@
           </a-menu-item>
           <a-menu-item key="3">
             <template #icon>
-              <AppstoreOutlined />
+              <UserOutlined />
             </template>
-            公司信息
+            个人中心
           </a-menu-item>
         </a-menu>
       </a-layout-sider>
@@ -62,9 +64,9 @@
         <a-layout-content
           :style="{ margin: '24px 16px 0', minHeight: 'calc(100vh - 138px)' }"
         >
-            <router-view />
+          <router-view />
         </a-layout-content>
-        <a-layout-footer style="text-align: center;">
+        <a-layout-footer style="text-align: center">
           爱兼职 2022 Created by Ai Jian Zhi
         </a-layout-footer>
       </a-layout>
@@ -77,19 +79,23 @@ import { useRouter } from "vue-router";
 import {
   MailOutlined,
   CalendarOutlined,
-  AppstoreOutlined,
   DownOutlined,
+  HomeOutlined,
+  UserOutlined,
+  PoweroffOutlined,
   SettingOutlined,
 } from "@ant-design/icons-vue";
 import { reactive, toRefs, getCurrentInstance, onBeforeMount, ref } from "vue";
 export default {
-  name: "CompanyHome",
+  name: "Company",
   components: {
     MailOutlined,
+    UserOutlined,
     DownOutlined,
+    PoweroffOutlined,
     CalendarOutlined,
-    AppstoreOutlined,
     SettingOutlined,
+    HomeOutlined,
   },
   setup() {
     const router = useRouter();
@@ -110,10 +116,20 @@ export default {
         });
     };
     onBeforeMount(() => {
+      state.selectedKeys = [window.localStorage.getItem('select')];
       getCompanyInfo();
     });
+    const handlerExit = () => {
+      router.replace("/user/login");
+    };
+    const personCenter = () => {
+      state.selectedKeys = ['3']
+      router.push("/company/companyInfo");
+    }
     const menuHandler = (params) => {
       const { key } = params;
+      window.localStorage.setItem('select', key);
+      console.log(window.localStorage.getItem('select'));
       switch (key) {
         case "0":
           router.push("/company/home");
@@ -131,6 +147,8 @@ export default {
     };
     return {
       companyName,
+      handlerExit,
+      personCenter,
       ...toRefs(state),
       menuHandler,
     };

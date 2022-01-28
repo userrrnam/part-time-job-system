@@ -1,7 +1,7 @@
 <template>
   <div class="login_container">
-    <img src="@/assets/looking_job.png" />
-    <!-- <img src="@/assets/looking_person.png" > -->
+    <img src="@/assets/looking_job.png" v-if="!flag"/>
+    <img src="@/assets/looking_person.png" v-else>
     <div class="login_contant">
       <div class="login_wrapper">
         <div class="title">
@@ -66,7 +66,7 @@
         </a>
       </div>
     </div>
-
+    <ValidateEmail :show="show" @ok="handleOk" @cancel="handleCancel"/>
     <Ragister />
   </div>
 </template>
@@ -80,17 +80,20 @@ import { setToken } from "@/util/storage.js";
 import md5 from "js-md5";
 import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
 import Ragister from "./components/Register.vue";
+import ValidateEmail from './components/ValidateEmail.vue'
 export default {
   name: "Login",
   components: {
     UserOutlined,
     LockOutlined,
     Ragister,
+    ValidateEmail,
   },
   setup() {
     const router = useRouter();
     const flag = ref(false);
     const formRef = ref();
+    const show = ref(false);
     const store = useStore();
     const current = ref(["01"]);
     const visible = ref(false);
@@ -111,6 +114,7 @@ export default {
     const changeSelect = (e) => {
       if (e.key === "01") {
         flag.value = false;
+        formRef.value.resetFields();
       } else {
         flag.value = true;
         formRef.value.resetFields();
@@ -130,7 +134,7 @@ export default {
             studentAccount: account,
           })
           .then((res) => {
-            if (res.results?.token) {
+            if (res?.results) {
               setToken(res.results.token);
               message.success("登录成功!", 1);
               router.push("/home");
@@ -143,17 +147,26 @@ export default {
             password: md5(password),
           })
           .then((res) => {
-            setToken(res.results.token);
-            message.success("登录成功!", 1);
-            router.push("/company/home");
+            if (res.results) {
+              setToken(res?.results.token);
+              message.success("登录成功!", 1);
+              router.push("/company/home");
+            }
           });
       }
     };
     const toRegister = () => {
       router.push("/user/register");
     };
+    const handleOk = () => {
+      show.value = false;
+    }
+    const handleCancel = () =>{ 
+      show.value = false;
+    }
     const openDrawer = () => {
-      visible.value = true;
+      show.value = true;
+      // visible.value = true;
     };
     return {
       store,
@@ -164,7 +177,10 @@ export default {
       changeSelect,
       formState,
       onFinish,
+      handleOk,
+      handleCancel,
       flag,
+      show,
       openDrawer,
     };
   },
