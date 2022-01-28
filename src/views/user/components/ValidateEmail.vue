@@ -10,6 +10,7 @@
           "
           v-model:value="form.email"
           placeholder="邮箱"
+          @change="onChange"
           allowClear
         >
           <template #suffix>
@@ -74,10 +75,12 @@ export default {
       emit("cancel");
     };
     const handleFinish = () => {
-      const {code, email} = form;
-      ins.$http.post("/EmailSecurityCode/VerifySecurityCode", {code, email}).then(res => {
-        console.log(res);
-      })
+      const { code, email } = form;
+      ins.$http
+        .post("/EmailSecurityCode/VerifySecurityCode", { code, email })
+        .then((res) => {
+          console.log(res);
+        });
       emit("ok");
     };
     const validatorEmail = () => {
@@ -109,7 +112,11 @@ export default {
           });
       }
     };
-
+    const onChange = () => {
+      if (form.email) {
+        alert1.value = false;
+      }
+    };
     watch(
       () => flag.value,
       () => {
@@ -132,6 +139,7 @@ export default {
       handleFinish,
       form,
       getCode,
+      onChange,
       alert1,
       alert2,
       flag,

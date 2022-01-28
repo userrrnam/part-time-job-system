@@ -1,11 +1,6 @@
 <template>
   <a-modal v-model:visible="showModal" :title="title" :footer="null">
-    <a-form
-      :model="form"
-      :rules="rules"
-      ref="formRef"
-      @finish="handleFinish"
-    >
+    <a-form :model="form" :rules="rules" ref="formRef" @finish="handleFinish">
       <a-form-item label="职位名称" name="jobName">
         <a-input
           v-model:value="form.jobName"
@@ -73,7 +68,7 @@
           :disabled="!addFlag && readOnly"
           placeholder="选择期望城市"
         />
-        <span v-if="!readOnly">{{ form.city }}</span>
+        <span v-if="!readOnly">{{ cityName }}</span>
       </a-form-item>
       <a-form-item label="工作要求" name="details">
         <a-textarea
@@ -103,6 +98,7 @@ import options from "@/util/cascader-address-options.js";
 import { useConsteEffect } from "@/views/home/components/banner/hooks.js";
 import { reactive, ref } from "@vue/reactivity";
 import { watch } from "@vue/runtime-core";
+import { getCityName } from "@/util/city.js";
 export default {
   name: "JobModal",
   props: {
@@ -130,6 +126,7 @@ export default {
   setup(props, { emit }) {
     const calculateOptions = ["日结", "周结", "月结"];
     const form = reactive(props.forms);
+    const cityName = ref();
     const addFlag = ref(false);
     watch(
       () => props.action,
@@ -160,7 +157,6 @@ export default {
       emit("cancel");
     };
     const handleFinish = () => {
-      console.log(1);
       emit("ok", form);
     };
     const clearForm = () => {
@@ -175,6 +171,13 @@ export default {
       details: [{ required: true, message: "不能为空" }],
       city: [{ required: true, message: "不能为空" }],
     };
+
+    watch(
+      () => form.city,
+      () => {
+        cityName.value = getCityName(form.city[form.city.length - 1]);
+      }
+    );
     return {
       rules,
       form,
@@ -184,6 +187,7 @@ export default {
       addFlag,
       options,
       handleFinish,
+      cityName,
       clearForm,
       handleCancel,
       calculateOptions,

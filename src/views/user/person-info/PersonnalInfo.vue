@@ -61,6 +61,7 @@
 import { getCurrentInstance, onBeforeMount, reactive, ref } from "vue";
 import { EditOutlined, LockOutlined } from "@ant-design/icons-vue";
 import { message } from "ant-design-vue";
+import { getCityName } from "@/util/city.js";
 import options from "@/util/cascader-address-options.js";
 import BreakCrumb from "@/components/bread-crumb/BreakCrumb.vue";
 import Navigation from "@/components/nav/Navigation.vue";
@@ -95,22 +96,7 @@ export default {
             res.results.sex = res.results.sex ? "0" : "1";
             Object.assign(info, res.results);
             info.avtarColor = info.sex === "0" ? "#f56a00" : "#1890ff";
-            const provincesCode = res.results.city?.substr(0, 2);
-            const cityCode = res.results.city?.substr(0, 4);
-            const areasCode = res.results.city;
-            options.forEach((province) => {
-              if (province.value === provincesCode) {
-                province.children.forEach((citys) => {
-                  if (citys.value == cityCode) {
-                    citys.children.forEach((areas) => {
-                      if (areas.value === areasCode) {
-                        cityName.value = `${province.label}/${citys.label}/${areas.label}`;
-                      }
-                    });
-                  }
-                });
-              }
-            });
+            cityName.value = getCityName(res.results.city);
             editFlag.value = false;
           }
         });

@@ -279,8 +279,7 @@ export default {
         ...res,
       };
       ins.$http.post("/RegisterStudentUser/insertOneStudnetUser", state).then(
-        (res) => {
-          console.log(res);
+        (_) => {
           results.value = true;
         },
         (err) => {

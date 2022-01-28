@@ -122,7 +122,6 @@ export default {
           companyId: value,
         })
         .then((res) => {
-          console.log(res);
           if (res.results) {
             Object.assign(companyDetailInfo, res.results);
           }

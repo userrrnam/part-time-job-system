@@ -129,7 +129,6 @@ export default {
     const menuHandler = (params) => {
       const { key } = params;
       window.localStorage.setItem('select', key);
-      console.log(window.localStorage.getItem('select'));
       switch (key) {
         case "0":
           router.push("/company/home");

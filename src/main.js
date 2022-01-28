@@ -17,7 +17,6 @@ echarts.use([
   CanvasRenderer,
   LabelLayout
 ]);
-import 'default-passive-events'
 const app = createApp(App)
 app.config.globalProperties.$http = axios;
 app.config.globalProperties.$echarts = echarts;

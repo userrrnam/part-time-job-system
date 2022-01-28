@@ -57,6 +57,7 @@ import { SearchOutlined } from "@ant-design/icons-vue";
 import ApplyModal from "../apply-modal/ApplyModal.vue";
 import AuditModal from "../audit-modal/AuditModal.vue";
 import { message } from "ant-design-vue";
+import { getCityName } from '@/util/city.js'
 const columns = [
   {
     dataIndex: "jobName",
@@ -131,6 +132,8 @@ export default {
       getApplyList();
     };
     const checkItem = (vals) => {
+      vals.city = getCityName(vals.city);
+      vals.jobCity = getCityName(vals.jobCity);
       applyDetails.value = vals;
       showModal.value = true;
     };

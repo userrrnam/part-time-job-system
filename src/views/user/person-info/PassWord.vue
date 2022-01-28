@@ -120,7 +120,6 @@ export default {
       emit("closeModal");
     };
     const handleFinish = () => {
-      console.log(passwordParams);
       ins.$http
         .post("/StudentInformation/updateStudentInformation", {
           password: md5(passwordParams.newPassword),

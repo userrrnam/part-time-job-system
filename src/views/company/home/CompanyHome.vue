@@ -43,7 +43,6 @@ export default {
           state.start = start;
           state.end = end;
           state.all = all;
-          console.log(res.results);
         }
       });
       ins.$http.post("/CompanyHome/countApproval").then((res) => {
