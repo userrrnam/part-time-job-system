@@ -99,8 +99,8 @@
       </a-row>
       <a-row :gutter="16">
         <a-col :span="12">
-          <a-form-item label="邮箱" name="email">
-            <a-input v-model:value="form.email" placeholder="请输入邮箱" />
+          <a-form-item label="邮箱" name="emails">
+            <span>{{form.emails}}</span>
           </a-form-item>
         </a-col>
         <a-col :span="12">
@@ -161,13 +161,14 @@
 </template>
 
 <script>
-import { reactive, inject, ref, getCurrentInstance } from "vue";
+import { reactive, inject, ref, getCurrentInstance, watch } from "vue";
 import { useConsteEffect } from "@/views/home/components/banner/hooks.js";
 import options from "@/util/cascader-address-options.js";
 import md5 from 'js-md5';
 export default {
   name: "Register",
-  setup() {
+  props: ['email'],
+  setup(props) {
     const formRef = ref();
     const visible = inject("visible");
     const { proxy: ins } = getCurrentInstance();
@@ -181,7 +182,7 @@ export default {
       //性别
       sex: "0",
       //邮箱
-      email: "",
+      emails: "",
       //电话
       phone: "",
       //密码
@@ -198,6 +199,11 @@ export default {
       //个人介绍
       details: "",
     });
+    watch(() => props.email, () => {
+      if (props.email) {
+        form.emails = props.email;
+      }
+    }, {immediate: true})
     const calculateOptions = reactive(["日结", "周结", "月结"]);
     let validatepassword = async (_rule, value) => {
       if (value === "") {
@@ -258,7 +264,7 @@ export default {
       occupation: [{ required: true, message: "请选择工作类型" }],
       age: [{ required: true, message: "请输入年龄" }],
       phone: [{ required: true, validator: validatorPhone, trigger: "change" }],
-      email: [{ type: "email", message: "输入正确邮件" }],
+      emails: [{ type: "email", message: "输入正确邮件" }],
       name: [{ required: true, message: "请输入真实姓名" }],
     };
     const onClose = () => {
@@ -270,12 +276,13 @@ export default {
     }
     const handleFinish = () => {
       delete form.checkpassword;
-      const { city, sex, occupation,password, ...res } = form;
+      const { city, sex, occupation,password, emails, ...res } = form;
       const state = {
         city: city[city.length - 1],
         sex: sex === "0" ? false : true,
         password: md5(password),
         occupation: occupation === "不限" ? "" : occupation,
+        email: emails,
         ...res,
       };
       ins.$http.post("/RegisterStudentUser/insertOneStudnetUser", state).then(

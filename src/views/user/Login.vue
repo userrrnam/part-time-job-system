@@ -73,11 +73,12 @@
       :show="show"
       @ok="handleOk"
       @cancel="handleCancel"
+      @saveEmail="saveEmail"
       :validateFlag="validateFlag"
       @closeModal="closeModal"
       ref="validateRef"
     />
-    <Ragister />
+    <Ragister :email="email" />
   </div>
 </template>
 
@@ -108,6 +109,7 @@ export default {
     const validateRef = ref();
     const loading = ref(false);
     const store = useStore();
+    const email = ref();
     const current = ref(["01"]);
     const visible = ref(false);
     provide("visible", visible);
@@ -203,6 +205,9 @@ export default {
     const closeModal = () => {
       handleCancel();
     };
+    const saveEmail = (val) => {
+      email.value = val;
+    }
     return {
       store,
       validateFlag,
@@ -214,7 +219,9 @@ export default {
       formRef,
       closeModal,
       toRegister,
+      email,
       changeSelect,
+      saveEmail,
       formState,
       onFinish,
       handleOk,

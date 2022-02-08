@@ -1,6 +1,11 @@
 <template>
   <a-modal v-model:visible="show" title="验证" :footer="null">
-    <a-form :model="form" @finish="handleFinish" v-if="!showForm">
+    <a-form
+      :model="form"
+      @finish="handleFinish"
+      v-if="!showForm"
+      ref="emaiFormRef"
+    >
       <a-form-item name="email" v-if="!validateFlag">
         <a-input
           style="
@@ -117,6 +122,8 @@ export default {
     let time = ref(60);
     const showForm = ref(false);
     const formRef = ref();
+    const emaiFormRef = ref();
+    let timer;
     const flag = ref(false);
     const alert1 = ref(false);
     const alert2 = ref(false);
@@ -130,14 +137,21 @@ export default {
     });
 
     const handleCancel = () => {
+      if (showForm.value) {
+        formRef.value.resetFields();
+      }
+      form.studentAccount = "";
+      form.email = "";
+      form.code = "";
+      clearInterval(timer);
+      alert1.value = false;
+      alert2.value = false;
       flag.value = false;
-      formRef.value.resetFields();
       emit("cancel");
     };
     const handleFinish = () => {
       const { code, email, studentAccount } = form;
       if (props.validateFlag) {
-        emit("ok");
         ins.$http
           .post("/LoginStudent/VerifySecurityCode", { code, studentAccount })
           .then((res) => {
@@ -147,13 +161,21 @@ export default {
             }
           });
       } else {
-        ins.$http
-          .post("/EmailSecurityCode/VerifySecurityCode", { code, email })
-          .then((res) => {
-            if (res.results) {
-              emit("ok");
-            }
-          });
+        if (form.code === "") {
+          message.error("请输入验证码", 1);
+        } else {
+          ins.$http
+            .post("/EmailSecurityCode/VerifySecurityCode", { code, email })
+            .then((res) => {
+              if (res?.results) {
+                emaiFormRef.value.resetFields();
+                flag.value = false;
+                clearInterval(timer);
+                emit("ok");
+                emit("saveEmail", email);
+              }
+            });
+        }
       }
     };
     const validatorEmail = () => {
@@ -188,7 +210,10 @@ export default {
               studentAccount: form.studentAccount,
             })
             .then((res) => {
-              console.log(res);
+              if (!res) {
+                clearInterval(timer);
+                flag.value = false;
+              }
             });
         }
       } else {
@@ -218,7 +243,6 @@ export default {
     watch(
       () => flag.value,
       () => {
-        let timer;
         if (flag.value) {
           timer = setInterval(() => {
             if (time.value === 0) {
@@ -278,6 +302,7 @@ export default {
       handleCancel,
       handleFinish,
       changePassword,
+      emaiFormRef,
       form,
       showForm,
       formRef,
