@@ -1,5 +1,5 @@
 <template>
-  <a-modal v-model:visible="show" title="验证" :footer="null">
+  <a-modal v-model:visible="show" title="验证" :footer="null" :maskClosable="false">
     <a-form
       :model="form"
       @finish="handleFinish"
@@ -143,11 +143,11 @@ export default {
       form.studentAccount = "";
       form.email = "";
       form.code = "";
-      clearInterval(timer);
       alert1.value = false;
       alert2.value = false;
-      flag.value = false;
       emit("cancel");
+      flag.value = false;
+      clearInterval(timer);
     };
     const handleFinish = () => {
       const { code, email, studentAccount } = form;
