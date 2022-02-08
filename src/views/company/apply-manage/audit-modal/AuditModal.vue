@@ -11,8 +11,8 @@
         ><a-radio-group v-model:value="state.status">
           <a-radio :value="1">通过</a-radio>
           <a-radio :value="2">拒绝</a-radio>
-        </a-radio-group></a-form-item
-      >
+        </a-radio-group>
+      </a-form-item>
       <a-form-item label="联系电话" name="phone">
         <a-input
           v-model:value="state.phone"
@@ -37,9 +37,7 @@
           background: '#fff',
         }"
       >
-        <a-button style="margin-right: 8px" @click="handleCancel"
-          >取消</a-button
-        >
+        <a-button style="margin-right: 8px" @click="handleCancel">取消</a-button>
         <a-button type="primary" html-type="submit">提交</a-button>
       </div>
     </a-form>
@@ -62,15 +60,24 @@ export default {
       emit("ok", state);
     };
     const handleCancel = () => {
-      formRef.value.resetFields();
+      resetForm();
       emit("cancel");
     };
+    const resetForm =() => {
+      formRef.value.resetFields();
+    }
     let validatorPhone = async (_, value) => {
       if (state.status === 1) {
         if (value === "") {
           return Promise.reject("请输入手机号码");
         } else if (!/^1[2-9]\d{9}$/.test(value)) {
           return Promise.reject("手机号格式不正确");
+        }
+      } else {
+         if (value === "") {
+          return Promise.resolve();
+        } else if (!/^1[2-9]\d{9}$/.test(value)) {
+          return Promise.reject("手机号格式不正确")
         }
       }
       return Promise.resolve();
@@ -81,9 +88,11 @@ export default {
     };
     return {
       handleFinish,
+      formRef,
       rules,
       state,
       handleCancel,
+      resetForm
     };
   },
 };

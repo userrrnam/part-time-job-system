@@ -32,7 +32,7 @@
       <span> 职位名称</span>
     </template>
     <template #action="{ record }">
-      <span v-if="record.status === 1" style="color:#52c41a">已通过</span>
+      <span v-if="record.status === 1" style="color: #52c41a">已通过</span>
       <span v-if="record.status === 2" style="color: #ff4d4f">已拒绝</span>
       <a v-if="record.status === 3" @click="audit(record)">审核</a>
       <a @click="checkItem(record)" style="margin-left: 20px">查看</a>
@@ -44,7 +44,7 @@
     @cancel="handleCancel"
     :applyDetails="applyDetails"
   />
-  <AuditModal :show="show" @ok="handleAudit" @cancel="handleCancel" />
+  <AuditModal ref="modalRef" :show="show" @ok="handleAudit" @cancel="handleCancel" />
 </template>
 <script>
 import {
@@ -57,7 +57,7 @@ import { SearchOutlined } from "@ant-design/icons-vue";
 import ApplyModal from "../apply-modal/ApplyModal.vue";
 import AuditModal from "../audit-modal/AuditModal.vue";
 import { message } from "ant-design-vue";
-import { getCityName } from '@/util/city.js'
+import { getCityName } from "@/util/city.js";
 const columns = [
   {
     dataIndex: "jobName",
@@ -88,6 +88,11 @@ export default {
     const { proxy: ins } = getCurrentInstance();
     const showModal = ref(false);
     const applyList = reactive([]);
+    const modalRef = ref();
+    const state = reactive({
+      city: "",
+      jobCity: "",
+    });
     const show = ref(false);
     const auditItem = ref();
     const applyDetails = ref();
@@ -132,9 +137,9 @@ export default {
       getApplyList();
     };
     const checkItem = (vals) => {
-      vals.city = getCityName(vals.city);
-      vals.jobCity = getCityName(vals.jobCity);
-      applyDetails.value = vals;
+      state.city = getCityName(vals.city);
+      state.jobCity = getCityName(vals.jobCity);
+      applyDetails.value = {...vals, ...state};
       showModal.value = true;
     };
     const handleOk = () => {
@@ -163,6 +168,7 @@ export default {
         .then((res) => {
           if (res.results) {
             message.success("审核完成", 1);
+            modalRef.value.resetForm();
             getApplyList();
           }
         });
@@ -170,6 +176,7 @@ export default {
     };
     return {
       show,
+      modalRef,
       handleFilter,
       columns,
       audit,

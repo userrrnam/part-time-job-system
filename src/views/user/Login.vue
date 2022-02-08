@@ -1,7 +1,7 @@
 <template>
   <div class="login_container">
-    <img src="@/assets/looking_job.png" v-if="!flag"/>
-    <img src="@/assets/looking_person.png" v-else>
+    <img src="@/assets/looking_job.png" v-if="!flag" />
+    <img src="@/assets/looking_person.png" v-else />
     <div class="login_contant">
       <div class="login_wrapper">
         <div class="title">
@@ -55,18 +55,28 @@
               type="primary"
               html-type="submit"
               class="login-form-button"
-              :loading="store.state.loading"
+              :loading="loading"
             >
               登录
             </a-button>
           </a-form-item>
         </a-form>
+        <a class="forget_password" @click="forgetPassword" v-if="!flag"
+          >忘记密码</a
+        >
         <a class="register_button" @click="openDrawer" v-if="!flag">
           没有账号?
         </a>
       </div>
     </div>
-    <ValidateEmail :show="show" @ok="handleOk" @cancel="handleCancel"/>
+    <ValidateEmail
+      :show="show"
+      @ok="handleOk"
+      @cancel="handleCancel"
+      :validateFlag="validateFlag"
+      @closeModal="closeModal"
+      ref="validateRef"
+    />
     <Ragister />
   </div>
 </template>
@@ -80,7 +90,7 @@ import { setToken } from "@/util/storage.js";
 import md5 from "js-md5";
 import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
 import Ragister from "./components/Register.vue";
-import ValidateEmail from './components/ValidateEmail.vue'
+import ValidateEmail from "./components/ValidateEmail.vue";
 export default {
   name: "Login",
   components: {
@@ -93,7 +103,10 @@ export default {
     const router = useRouter();
     const flag = ref(false);
     const formRef = ref();
+    const validateFlag = ref(false);
     const show = ref(false);
+    const validateRef = ref();
+    const loading = ref(false);
     const store = useStore();
     const current = ref(["01"]);
     const visible = ref(false);
@@ -126,6 +139,7 @@ export default {
     });
     const onFinish = (values) => {
       store.state.showNav = true;
+      loading.value = true;
       const { password, account } = values;
       if (!flag.value) {
         ins.$http
@@ -136,6 +150,9 @@ export default {
           .then((res) => {
             if (res?.results) {
               setToken(res.results.token);
+              setTimeout(() => {
+                loading.value = false;
+              }, 500);
               message.success("登录成功!", 1);
               router.push("/home");
             }
@@ -149,6 +166,9 @@ export default {
           .then((res) => {
             if (res.results) {
               setToken(res?.results.token);
+              setTimeout(() => {
+                loading.value = false;
+              }, 500);
               message.success("登录成功!", 1);
               router.push("/company/home");
             }
@@ -159,20 +179,40 @@ export default {
       router.push("/user/register");
     };
     const handleOk = () => {
+      if (validateFlag.value) {
+        validateRef.value.showForm = true;
+      } else {
+        show.value = false;
+        visible.value = true;
+      }
+    };
+    const handleCancel = () => {
       show.value = false;
-    }
-    const handleCancel = () =>{ 
-      show.value = false;
-    }
+      setTimeout(() => {
+        validateRef.value.showForm = false;
+      }, 500);
+    };
     const openDrawer = () => {
       show.value = true;
-      // visible.value = true;
+      validateFlag.value = false;
+    };
+    const forgetPassword = () => {
+      show.value = true;
+      validateFlag.value = true;
+    };
+    const closeModal = () => {
+      handleCancel();
     };
     return {
       store,
+      validateFlag,
       current,
+      validateRef,
       roleType,
+      forgetPassword,
+      loading,
       formRef,
+      closeModal,
       toRegister,
       changeSelect,
       formState,
@@ -222,6 +262,10 @@ export default {
         .login-form-button {
           width: 100%;
         }
+      }
+      .forget_password {
+        position: absolute;
+        left: 0;
       }
       .register_button {
         position: absolute;

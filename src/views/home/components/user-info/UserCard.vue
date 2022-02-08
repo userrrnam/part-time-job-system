@@ -77,7 +77,8 @@ export default {
           userInfo.lastTime = lastLoginTime;
           userInfo.sex = sex;
           userInfo.calculate = calculate;
-          userInfo.avtarColor = sex ?  "#f56a00" : "#1890ff";
+          userInfo.avtarColor = sex ?  "#f56a00" : "#1890ff"; 
+          
           store.commit("saveUserInfo", userInfo);
           store.commit("saveCity", city);
         }

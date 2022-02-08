@@ -41,7 +41,6 @@
             <a-textarea
               v-model:value="form.details"
               autoSize
-              :row="6"
               allowClear
               placeholder="请输入"
             />
