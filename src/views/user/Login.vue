@@ -152,12 +152,12 @@ export default {
           .then((res) => {
             if (res?.results) {
               setToken(res.results.token);
-              setTimeout(() => {
-                loading.value = false;
-              }, 500);
               message.success("登录成功!", 1);
               router.push("/home");
             }
+              setTimeout(() => {
+                loading.value = false;
+              }, 500);
           });
       } else {
         ins.$http
@@ -168,12 +168,12 @@ export default {
           .then((res) => {
             if (res.results) {
               setToken(res?.results.token);
-              setTimeout(() => {
-                loading.value = false;
-              }, 500);
               message.success("登录成功!", 1);
               router.push("/company/home");
             }
+              setTimeout(() => {
+                loading.value = false;
+              }, 500);
           });
       }
     };

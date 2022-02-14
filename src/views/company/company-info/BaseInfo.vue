@@ -40,8 +40,8 @@
           <a-form-item label="公司简介" name="details">
             <a-textarea
               v-model:value="form.details"
-              autoSize
               allowClear
+              :rows="8"
               placeholder="请输入"
             />
           </a-form-item>

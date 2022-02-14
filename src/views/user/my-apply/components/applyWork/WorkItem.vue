@@ -76,6 +76,7 @@
       <template #content>
         <p v-if="job.status === 3">职位审核中，请耐心等待！</p>
         <div v-else>{{ job.message }}</div>
+        <div v-if="job.phone">联系电话：{{ job.phone }}</div>
       </template>
       <a class="audit icon" v-if="job.status === 3">
         <ClockCircleOutlined />审核中
