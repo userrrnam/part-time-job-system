@@ -171,11 +171,15 @@ export default {
       loading.value = true;
       ins.$http
         .post("/CompanyPosition/updatePositionStatus", { jobId: vals })
-        .then((_) => {
-          setTimeout(() => {
-            getJobTable();
-            message.success("操作成功", 1);
-          }, 500);
+        .then((res) => {
+          if (res?.results) {
+            setTimeout(() => {
+              getJobTable();
+              message.success("操作成功", 1);
+            }, 500);
+          } else {
+            loading.value = false;
+          }
         });
     };
     //新增职位
