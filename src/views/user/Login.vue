@@ -155,9 +155,7 @@ export default {
               message.success("登录成功!", 1);
               router.push("/home");
             }
-              setTimeout(() => {
-                loading.value = false;
-              }, 500);
+        
           });
       } else {
         ins.$http
@@ -171,11 +169,11 @@ export default {
               message.success("登录成功!", 1);
               router.push("/company/home");
             }
-              setTimeout(() => {
-                loading.value = false;
-              }, 500);
           });
       }
+      setTimeout(() => {
+        loading.value = false;
+      }, 500);
     };
     const toRegister = () => {
       router.push("/user/register");
@@ -207,7 +205,7 @@ export default {
     };
     const saveEmail = (val) => {
       email.value = val;
-    }
+    };
     return {
       store,
       validateFlag,
